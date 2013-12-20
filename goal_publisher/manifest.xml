@@ -1,0 +1,18 @@
+<package>
+  <description brief="goal_publisher">
+
+     goal_publisher
+
+  </description>
+  <author>Yoshimaru Tanaka</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/goal_publisher</url>
+  <depend package="roscpp"/>
+  <depend package="std_msgs"/>
+  <depend package="tf"/>
+  <depend package="geometry_msgs"/>
+
+</package>
+
+
