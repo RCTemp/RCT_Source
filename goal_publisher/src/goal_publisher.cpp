@@ -11,6 +11,7 @@ int main(int argc, char **argv)
   
   geometry_msgs::PoseStamped goal_msg;
   goal_msg.header.stamp = ros::Time::now();
+  goal_msg.header.frame_id = "/map";
   goal_msg.pose.position.x = 0.1;
   goal_msg.pose.position.y = 0.1;
   goal_msg.pose.position.z = 0;
