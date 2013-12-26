@@ -1,0 +1,14 @@
+<package>
+  <description brief="ROS2OSC">
+
+     ROS2OSC
+
+  </description>
+  <author>noda</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/ROS2OSC</url>
+
+</package>
+
+
