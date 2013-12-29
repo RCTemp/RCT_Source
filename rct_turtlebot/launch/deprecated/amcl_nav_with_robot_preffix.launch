@@ -1,0 +1,30 @@
+<launch>
+  <arg name="robot_preffix" default="robot1" />
+
+  <group  ns="$(arg robot_preffix)">
+
+    <arg name="map_file" default="$(find move_base2)/maps/sample_map.yaml"/>
+    <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" output="screen"/>
+
+    <include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
+      <arg name="rgb_processing" value="false" />
+      <arg name="depth_registration" value="false" />
+      <arg name="depth_processing" value="false" />
+    </include>
+
+    <arg name="initial_pose_x" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
+    <arg name="initial_pose_y" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
+    <arg name="initial_pose_a" default="0.0"/>
+
+    <include file="$(find turtlebot_navigation)/launch/includes/_amcl.launch">
+      <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+      <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+      <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+    </include>
+
+  <include file="$(find move_base2)/launch/move_base.launch"/> 
+
+  </group>
+
+</launch>
+

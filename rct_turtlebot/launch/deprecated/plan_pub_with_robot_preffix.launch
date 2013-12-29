@@ -1,0 +1,8 @@
+<launch>
+  <arg name="robot_preffix" default="robot1" />
+
+  <group  ns="$(arg robot_preffix)">
+  <node pkg="move_base2" type="plan_pub_sample.py" name="plan_pub" output="screen"/>
+</group>
+
+</launch>

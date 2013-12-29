@@ -1,0 +1,12 @@
+<launch>
+  <arg name="robot_preffix" default="robot1" />
+
+  <group  ns="$(arg robot_preffix)">
+
+    <arg name="map_file" default="$(find move_base2)/maps/sample_map.yaml"/>
+    <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" output="screen"/>
+
+  </group>
+
+</launch>
+
