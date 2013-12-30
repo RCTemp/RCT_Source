@@ -7,7 +7,7 @@ import org.ros.node.NodeMainExecutor;
 public class ROS2OSC_main {
 
 	public static void main(String[] args) throws Exception {
-		String ros_ip = null, ros_master = null, ocs_ip = null, ocs_ad = null;
+		String ros_ip = null, ros_master = null, ocs_ip = null, ocs_ad = null, topic=null;
 
 		char mode = 'w';
 		for (String buf : args) {
@@ -42,6 +42,10 @@ public class ROS2OSC_main {
 					System.out.println("ocs_ad " + buf);
 					ocs_ad = buf;
 					break;
+				case 't':
+					System.out.println("topic " + buf);
+					topic = buf;
+					break;
 				default:
 					System.out.println("unknow tag " + buf);
 				}
@@ -55,11 +59,13 @@ public class ROS2OSC_main {
 		if (ocs_ip == null)
 			ocs_ip = ros_ip;
 		if (ocs_ad == null)
-			ros_ip = "/test";
+			ocs_ad = "/test";
+		if (topic == null)
+			topic = "request";
 
 		NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(
 				ros_ip, new URI(ros_master));
-		ROS2OSC ros2osc = new ROS2OSC(ocs_ip, ocs_ad);
+		ROS2OSC ros2osc = new ROS2OSC(ocs_ip, ocs_ad,topic);
 		NodeMainExecutor runner = DefaultNodeMainExecutor.newDefault();
 		runner.execute(ros2osc, nodeConfiguration);
 	}
