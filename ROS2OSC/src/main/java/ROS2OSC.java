@@ -5,7 +5,6 @@ import org.ros.message.MessageListener;
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
-import org.ros.node.NodeMain;
 import org.ros.node.topic.Publisher;
 import org.ros.node.topic.Subscriber;
 
@@ -17,6 +16,15 @@ public class ROS2OSC extends AbstractNodeMain {
 	public Publisher<std_msgs.String> publisher;
 	final public static String nodename = "ros2osc" ;
 
+	private String ocs_ip ;
+	private String ocs_ad ;
+
+	public ROS2OSC(String ocs_ip, String ocs_ad){
+		super() ;
+		this.ocs_ip = ocs_ip ;
+		this.ocs_ad = ocs_ad ;
+	}
+	
 	@Override
 	public GraphName getDefaultNodeName() {
 		return GraphName.of(ROS2OSC.nodename);
@@ -48,24 +56,18 @@ public class ROS2OSC extends AbstractNodeMain {
 	
 	public void oscEcho (String msg){
 		try {
-		    InetAddress remoteIP  = InetAddress.getByName("157.82.6.123");
-			//InetAddress remoteIP = InetAddress.getLocalHost();
+		    InetAddress remoteIP  = InetAddress.getByName(this.ocs_ip);
 		    int remotePort = 8000;
 		    
 		    OSCPortOut sender = new OSCPortOut(remoteIP, remotePort);
 		    
-		    // The address to send our message to
-		    String address1 = "/test";
+		    String address1 = this.ocs_ad;
 		    
-		    // An array of objects that are our values we would like to send
 		    Object values1[] = new Object[1];
-		    //values1[0] = new Integer(3);
 		    values1[0] = msg;
 		    
-		    // Bring the address and values together to form an OSCMessage
 		    OSCMessage message1 = new OSCMessage(address1, values1);
 		   
-		    // Send each message
 		    System.out.printf("Sending message1 to %s:%s at %s\n", remoteIP, remotePort, message1.getAddress());
 		    sender.send(message1);
 		} catch (IOException e) {
