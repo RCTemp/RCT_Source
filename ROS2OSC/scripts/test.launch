@@ -1,0 +1,32 @@
+<launch>
+  <arg name="local_ip" default="192.168.2.102"/>
+  <arg name="ros_ip" default="$(arg local_ip)"/>
+  <arg name="ros_master_uri" default="http://$(arg local_ip):11311" />
+  <arg name="osc_ip" default="$(arg local_ip)" />
+  <arg name="topic1" default="ballx" />
+  <arg name="osc_ad1" default="/$(arg topic1)" />
+  <arg name="topic2" default="bally" />
+  <arg name="osc_ad2" default="/$(arg topic2)" />
+
+  <node pkg="ROS2OSC" type="run_java.sh" name="ros2osc1"
+	args="$(find ROS2OSC)/scripts/ROS2OCS.jar -r $(arg local_ip) -m $(arg ros_master_uri) -o $(arg osc_ip) -t $(arg topic1) -a $(arg osc_ad1)"
+	output="screen" >
+  </node>
+
+  <node pkg="ROS2OSC" type="run_java.sh" name="ros2osc2"
+	args="$(find ROS2OSC)/scripts/ROS2OCS.jar -r $(arg local_ip) -m $(arg ros_master_uri) -o $(arg osc_ip) -t $(arg topic2) -a $(arg osc_ad2)"
+	output="screen" >
+  </node>
+
+  <node pkg="ROS2OSC" type="run_java.sh" name="osc_receiver"
+	args="$(find ROS2OSC)/scripts/OCSReceiver.jar 8000 $(arg osc_ad1) $(arg osc_ad2)"
+	output="screen" >
+  </node>
+
+  <node pkg="ROS2OSC" type="simple_pub.sh" name="simple_pub"
+	args="/ros2osc/float/$(arg topic1);std_msgs/Float32;3.14 /ros2osc/float/$(arg topic2);std_msgs/Float32;3.14"
+	output="screen" >
+  </node>
+
+  <!-- export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:`pwd` -->
+</launch>
