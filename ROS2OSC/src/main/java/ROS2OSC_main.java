@@ -12,9 +12,9 @@ public class ROS2OSC_main {
 		char mode = 'w';
 		for (String buf : args) {
 			if (buf.length() == 0) {
-				System.out.println("null arg");
+				System.out.println("[ROS2OSC] null arg");
 			} else if (buf.charAt(0) == '-' && buf.length() > 1) {
-				System.out.println("option detected " + buf);
+				System.out.println("[ROS2OSC] option detected " + buf);
 				mode = buf.charAt(1);
 				if (mode == 'h') {
 					System.out
@@ -24,30 +24,35 @@ public class ROS2OSC_main {
 			} else {
 				switch (mode) {
 				case 'w':
-					System.out.println("skip " + buf);
+					System.out.println("[ROS2OSC] skip " + buf);
 					break;
 				case 'r':
-					System.out.println("ros_ip " + buf);
+					System.out.println("[ROS2OSC] ros_ip " + buf);
 					ros_ip = buf;
+					mode = 'w' ;
 					break;
 				case 'm':
-					System.out.println("ros_master " + buf);
+					System.out.println("[ROS2OSC] ros_master " + buf);
 					ros_master = buf;
+					mode = 'w' ;
 					break;
 				case 'o':
-					System.out.println("ocs_ip " + buf);
+					System.out.println("[ROS2OSC] ocs_ip " + buf);
 					ocs_ip = buf;
+					mode = 'w' ;
 					break;
 				case 'a':
-					System.out.println("ocs_ad " + buf);
+					System.out.println("[ROS2OSC] ocs_ad " + buf);
 					ocs_ad = buf;
+					mode = 'w' ;
 					break;
 				case 't':
-					System.out.println("topic " + buf);
+					System.out.println("[ROS2OSC] topic " + buf);
 					topic = buf;
+					mode = 'w' ;
 					break;
 				default:
-					System.out.println("unknow tag " + buf);
+					System.out.println("[ROS2OSC] unknow tag " + buf);
 				}
 			}
 		}

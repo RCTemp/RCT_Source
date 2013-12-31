@@ -3,6 +3,8 @@ import geometry_msgs.PoseWithCovariance;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 import org.ros.message.MessageListener;
 import org.ros.namespace.GraphName;
@@ -17,22 +19,39 @@ import com.illposed.osc.OSCPortOut;
 public class ROS2OSC extends AbstractNodeMain {
 
 	public Publisher<std_msgs.String> publisher;
-	final public static String nodename = "ros2osc" ;
+	final public static String nodename = "ros2osc"  ;
 
 	private String ocs_ip ;
 	private String ocs_ad ;
 	private String topic ;
 
+	private OSCPortOut sender ;
+	
 	public ROS2OSC(String ocs_ip, String ocs_ad, String topic){
 		super() ;
 		this.ocs_ip = ocs_ip ;
 		this.ocs_ad = ocs_ad ;
 		this.topic = topic ;
+		
+		if ( this.sender == null ){
+			InetAddress remoteIP;
+			try {
+				remoteIP = InetAddress.getByName(this.ocs_ip);
+				int remotePort = 8000;
+				this.sender = new OSCPortOut(remoteIP, remotePort);
+			} catch (UnknownHostException e) {
+				this.sender = null ;
+				e.printStackTrace();
+			} catch (SocketException e) {
+				this.sender = null ;
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	@Override
 	public GraphName getDefaultNodeName() {
-		return GraphName.of(ROS2OSC.nodename);
+		return GraphName.of(ROS2OSC.nodename + System.currentTimeMillis());
 	}
 
 	@Override
@@ -87,21 +106,28 @@ public class ROS2OSC extends AbstractNodeMain {
 	}
 	
 	public void oscEcho (String ocs_ad, Object msg){
+		if ( this.sender == null ){
+			InetAddress remoteIP;
+			try {
+				remoteIP = InetAddress.getByName(this.ocs_ip);
+				int remotePort = 8000;
+				this.sender = new OSCPortOut(remoteIP, remotePort);
+			} catch (UnknownHostException e) {
+				this.sender = null ;
+				e.printStackTrace();
+			} catch (SocketException e) {
+				this.sender = null ;
+				e.printStackTrace();
+			}
+		}
 		try {
-		    InetAddress remoteIP  = InetAddress.getByName(this.ocs_ip);
-		    int remotePort = 8000;
-		    
-		    OSCPortOut sender = new OSCPortOut(remoteIP, remotePort);
-		    
-		    String address1 = ocs_ad;
-		    
+			String address1 = ocs_ad;
 		    Object values1[] = new Object[1];
 		    values1[0] = msg;
-		    
 		    OSCMessage message1 = new OSCMessage(address1, values1);
 		   
-		    System.out.printf("Sending message1 to %s:%s %s at %s\n", remoteIP, remotePort, msg, message1.getAddress());
-		    sender.send(message1);
+		    System.out.printf("[ROS2OSC] Sending message1 to %s:%s %s at %s\n", this.ocs_ip, 8000, msg, ocs_ad);
+		    this.sender.send(message1);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
