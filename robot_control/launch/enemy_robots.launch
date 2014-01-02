@@ -1,0 +1,10 @@
+<launch>
+  <node name="enemy_1" pkg="robot_control" type="random_goals_publisher">
+    <remap from="random_goal" to="enemy_1/random_goal"/>
+  </node>
+
+<node name="enemy_2" pkg="robot_control" type="random_goals_publisher">
+    <remap from="random_goal" to="enemy_2/random_goal"/>
+  </node>
+
+</launch>
