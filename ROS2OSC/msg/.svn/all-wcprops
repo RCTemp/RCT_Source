@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/6171/trunk/rtmros_gazebo/hrpsys_gazebo_atlas/msg
+END
+JointStateCompressed.msg
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/6171/trunk/rtmros_gazebo/hrpsys_gazebo_atlas/msg/JointStateCompressed.msg
+END
+TrianglePoints.msg
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/6011/trunk/rtmros_gazebo/hrpsys_gazebo_atlas/msg/TrianglePoints.msg
+END
