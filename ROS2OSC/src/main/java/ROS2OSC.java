@@ -1,5 +1,5 @@
-import geometry_msgs.Point;
-import geometry_msgs.PoseWithCovariance;
+//import geometry_msgs.Point;
+//import geometry_msgs.PoseWithCovariance;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -59,9 +59,9 @@ public class ROS2OSC extends AbstractNodeMain {
 		this.publisher = connectedNode.newPublisher(ROS2OSC.nodename + "/" + "test_feedback",
 				std_msgs.String._TYPE);
 
-		Subscriber<std_msgs.String> damage = connectedNode.newSubscriber(
+		Subscriber<std_msgs.String> sr = connectedNode.newSubscriber(
 				ROS2OSC.nodename + "/string/" + this.topic , std_msgs.String._TYPE);
-		damage.addMessageListener(new MessageListener<std_msgs.String>() {
+		sr.addMessageListener(new MessageListener<std_msgs.String>() {
 			@Override
 			public void onNewMessage(std_msgs.String emp) {
 				System.out.println(emp.getData()) ;
@@ -77,6 +77,17 @@ public class ROS2OSC extends AbstractNodeMain {
 			public void onNewMessage(std_msgs.Float32 emp) {
 				System.out.println(emp.getData()) ;
 				ROS2OSC.this.rosEcho(emp.getData()+"") ;
+				ROS2OSC.this.oscEcho(emp.getData()) ;
+			}
+		});
+
+		Subscriber<std_msgs.String> util = connectedNode.newSubscriber(
+				ROS2OSC.nodename + "/" + this.topic , std_msgs.String._TYPE);
+		util.addMessageListener(new MessageListener<std_msgs.String>() {
+			@Override
+			public void onNewMessage(std_msgs.String emp) {
+				System.out.println(emp.getData()) ;
+				ROS2OSC.this.rosEcho(emp.getData()) ;
 				ROS2OSC.this.oscEcho(emp.getData()) ;
 			}
 		});
@@ -102,10 +113,31 @@ public class ROS2OSC extends AbstractNodeMain {
 	}
 	
 	public void oscEcho(Object msg){
-		oscEcho(this.ocs_ad, msg) ;
+		oscEcho(this.ocs_ad, new Object[]{msg}) ;
 	}
 	
-	public void oscEcho (String ocs_ad, Object msg){
+	public void oscEcho(String s){
+		String[] buf = s.split(" ") ;
+		if ( buf.length < 1 ){
+			System.out.printf("[ROS2OSC] invalid string %s\n", s);
+			return ;
+		}
+		String adr = buf[0] ;
+		Object[] msg = new Object[buf.length-1] ;
+		Object[] tmp = new Object[1] ;
+		for ( int i=1 ; i<buf.length ; i++ ){
+			if ( ROS2OSC.parseFloat(buf[i], tmp) ){
+				msg[i-1] = tmp[0] ;
+			} else if ( ROS2OSC.parseBoolean(buf[i], tmp) ){
+				msg[i-1] = tmp[0] ;
+			} else {
+				msg[i-1] = buf[i] ;
+			}
+		}
+		oscEcho(adr, msg) ;
+	}
+	
+	public void oscEcho (String ocs_ad, Object[] msg){
 		if ( this.sender == null ){
 			InetAddress remoteIP;
 			try {
@@ -122,14 +154,52 @@ public class ROS2OSC extends AbstractNodeMain {
 		}
 		try {
 			String address1 = ocs_ad;
-		    Object values1[] = new Object[1];
-		    values1[0] = msg;
-		    OSCMessage message1 = new OSCMessage(address1, values1);
+		    OSCMessage message1 = new OSCMessage(address1, msg);
 		   
-		    System.out.printf("[ROS2OSC] Sending message1 to %s:%s %s at %s\n", this.ocs_ip, 8000, msg, ocs_ad);
+		    System.out.printf("[ROS2OSC] Sending message1 to %s:%s %s at %s\n", this.ocs_ip, 8000, objString(msg), ocs_ad);
 		    this.sender.send(message1);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static boolean parseFloat(String target, Object[] ret){
+		try {
+			Float f = Float.parseFloat(target) ;
+			ret[0] = f ;
+			return true ;
+		} catch ( NumberFormatException e ){
+			//e.printStackTrace() ;
+			return false ;
+		}
+	}
+	
+	public static boolean parseBoolean(String target, Object[] ret){
+		target = target.toLowerCase().trim() ;
+		if ( target.contains("true") ){
+			ret[0] = (Boolean)true ;
+			return true ;
+		} else if ( target.contains("false") ){
+			ret[0] = (Boolean)false ;
+			return true ;
+		} else {
+			return false ;
+		}
+	}
+	
+	public static String objString(Object[] obj){
+		if ( obj == null || obj.length == 0 ) return "" ;
+		StringBuilder ret = new StringBuilder() ;
+		for ( Object o : obj ){
+			if ( o.getClass() == String.class ){
+				ret.append ( "\"" + o + "\"" ) ;
+			} else if ( o.getClass() == Float.class ){
+				ret.append(o) ;
+			} else if ( o.getClass() == Boolean.class ){
+				ret.append("?" + o) ;
+			}
+			ret.append("/") ;
+		}
+		return ret.substring(0, ret.length()-1) ;
 	}
 }
