@@ -9,6 +9,9 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/turtlebots_master</url>
   <depend package="roscpp"/>
+  <depend package="std_msgs"/>
+  <depend package="multi_master_server"/>
+  <depend package="geometry_msgs"/>
 
 </package>
 
