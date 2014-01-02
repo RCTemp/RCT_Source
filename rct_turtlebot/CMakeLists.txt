@@ -18,6 +18,5 @@ rosbuild_add_boost_directories()
 # move_base
 rosbuild_add_executable(bin/move_base src/move_base.cpp)
 rosbuild_link_boost(bin/move_base system)
-
 rosbuild_add_executable(bin/pose_pub src/pose_pub.cpp)
-rosbuild_add_executable(bin/msg_client src/msg_client.cpp)
+
