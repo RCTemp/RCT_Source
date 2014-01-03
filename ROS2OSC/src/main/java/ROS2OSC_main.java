@@ -58,7 +58,7 @@ public class ROS2OSC_main {
 		}
 
 		if (ros_ip == null)
-			ros_ip = "157.82.4.150";
+			ros_ip = "127.0.0.1";
 		if (ros_master == null)
 			ros_master = "http://" + ros_ip + ":11311";
 		if (ocs_ip == null)
@@ -70,7 +70,7 @@ public class ROS2OSC_main {
 
 		NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(
 				ros_ip, new URI(ros_master));
-		ROS2OSC ros2osc = new ROS2OSC(ocs_ip, ocs_ad,topic);
+		ROS2OSC_util ros2osc = new ROS2OSC_util(ocs_ip, ocs_ad,topic);
 		NodeMainExecutor runner = DefaultNodeMainExecutor.newDefault();
 		runner.execute(ros2osc, nodeConfiguration);
 	}
