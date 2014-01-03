@@ -50,6 +50,7 @@
 (do-until-key
  (if (not (ros::ok)) (return-from nil nil))
  (print 'running)
- (ros2osc_pub :address "/test1")
+ (ros2osc_pub :address "/ballx")
+ (ros2osc_pub :address "/bally")
  (ros::spin-once)
  (ros::sleep))
