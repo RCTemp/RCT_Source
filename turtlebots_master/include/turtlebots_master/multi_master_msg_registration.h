@@ -6,6 +6,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include "multi_master_server/TopicDescription.h"
 #include "multi_master_server/RegisterMaster.h"
+#include "tf/transform_broadcaster.h"
 
 
 class MultiMasterMsgRegistrator{

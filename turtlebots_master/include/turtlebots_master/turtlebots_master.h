@@ -15,7 +15,8 @@ class TurtlebotsMaster{
   void teleopNodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg);
   void npc1NodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg);
   void npc2NodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg);
-
+  float distanceBetweenTwoNodes(float x1, float x2, float y1, float y2);
+  float inclinationBetweenTwoNodes(float x1, float x2, float y1, float y2);
 
  private:
   ros::NodeHandle turtlebotMasterNodeHandle_;
@@ -48,10 +49,21 @@ class TurtlebotsMaster{
   std::string npc2NodeSubName_;
   std::string npc2NodeSubType_;
 
+  double searchLightRadius_;
+  double searchLightRange_;
+  double inscribedRadius_;
+  float dDash;
 
-  geometry_msgs::PoseStamped teleopNodePose;
-  geometry_msgs::PoseStamped npc1NodePose;
-  geometry_msgs::PoseStamped npc2NodePose;
+
+  float teleopNodeX;
+  float teleopNodeY;
+  float teleopNodeTheta;
+  float npc1NodeX;
+  float npc1NodeY;
+  float npc1NodeTheta;
+  float npc2NodeX;
+  float npc2NodeY;
+  float npc2NodeTheta;
 
 };
 #endif
