@@ -15,6 +15,7 @@ public class CmdVelTalker extends AbstractNodeMain {
 	private Publisher<geometry_msgs.Twist> cmdVelPublisher;
 
 	synchronized public void publish(float x, float y, float z){
+		System.out.println("("+x+","+y+","+z+")");
 		
 		Vector3 vel = this.cmd_vel.getLinear() ;
 		Vector3 rot = this.cmd_vel.getAngular() ;
@@ -31,12 +32,12 @@ public class CmdVelTalker extends AbstractNodeMain {
 
 	@Override
 	public GraphName getDefaultNodeName() {
-		return GraphName.of("turtlebot_controller/cmd_vel_commander");
+		return GraphName.of("turtlebot_controller/twist_commander");
 	}
 
 	@Override
 	public void onStart(final ConnectedNode connectedNode) {
-		this.cmdVelPublisher = connectedNode.newPublisher("/cmd_vel",
+		this.cmdVelPublisher = connectedNode.newPublisher("/turtlebot_controller/twist_command", //"/cmd_vel_mux/input/teleop",
 				geometry_msgs.Twist._TYPE);
 		this.cmd_vel = connectedNode.getTopicMessageFactory().newFromType(
 				geometry_msgs.Twist._TYPE);

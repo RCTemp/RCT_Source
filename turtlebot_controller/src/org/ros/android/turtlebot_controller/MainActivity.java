@@ -41,7 +41,7 @@ public class MainActivity extends RosDialogActivity {
 
 		setContentView(R.layout.main);
 		image = (CompressedImageView) findViewById(R.id.image);
-		image.setTopicName("/camera/rgb/image_color/compressed_throttle");
+		image.setTopicName("/camera/rgb/image_color/compressed");
 		image.setMessageType(sensor_msgs.CompressedImage._TYPE);
 		image.setTalker(talker) ;
 		

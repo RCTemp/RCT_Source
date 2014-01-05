@@ -109,11 +109,13 @@ public class CompressedImageView extends ImageView implements NodeMain {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent e) {
-		System.out.println(e.getX() + ":" + e.getY());
-		float x = - ( e.getX() - this.getHeight()/2 );
-		float y = e.getY() - this.getWidth() / 2 ;
+		float x = ( e.getX() - this.getHeight()/2 )/(this.getHeight()/2) ;
+		if ( x == 0f ) x = (float) 1e-10 ;
+		float y = -(e.getY() - this.getWidth() / 2)/(this.getWidth()/2) ;
+		if ( y == 0f ) y = (float) 1e-10 ;
+		float w = (float)Math.atan2(x, y) ;
 		if ( this.talker != null ){
-			this.talker.publish( x, y , 0 ) ;
+			this.talker.publish( 1e-1f * y, 0 , -1e-1f * w ) ;
 		}
 		return true;
 	}
