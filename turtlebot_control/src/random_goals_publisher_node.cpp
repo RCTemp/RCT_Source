@@ -1,4 +1,4 @@
-#include "../include/random_goals.h"
+#include "turtlebot_control/random_goals.h"
 
 
 int main(int argc, char** argv){

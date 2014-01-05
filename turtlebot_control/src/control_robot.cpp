@@ -3,7 +3,7 @@
 flag_from_masterというrostopicを受け取った後はPathをパブリッシュしない。
 ======================================================================*/
 
-#include "../include/ros_header.h"
+#include "turtlebot_control/ros_header.h"
 
 //global variable
  bool flag;
@@ -17,6 +17,7 @@ void GetFlagCallback(const std_msgs::BoolConstPtr& got_flag)
     flag=false;
   }
 }
+
 void GetPathCallback(const nav_msgs::PathConstPtr& path)
 {
   ROS_INFO("Got Path");
@@ -28,7 +29,6 @@ void GetPathCallback(const nav_msgs::PathConstPtr& path)
   }else{
     ROS_INFO("flag = false, not published");
   }
-  
 }
 
 
