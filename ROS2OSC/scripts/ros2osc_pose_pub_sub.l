@@ -15,7 +15,7 @@
 	"geometry_msgs::posestamped"))))
 (defvar *ros2osc-pose-hz*
   (read-from-string
-   (or (unix:getenv "ROS2OSC_POSE_HZ") "3")))
+   (or (unix:getenv "ROS2OSC_POSE_HZ") "10")))
 (defvar *osc-host-ip*
   (or (unix:getenv "OSC_HOST_IP") "127.0.0.1"))
 
@@ -52,27 +52,19 @@
 	   message))
     (ros::publish "ros2osc/request" msg)))
 
+(defvar *now-pose*)
 (defun pose-stamped-echo
   (msg)
-  (let ((pose))
-    (case
-     ((subclassp (class msg) geometry_msgs::posestamped)
-      (setq pose (send msg :pose)))
-     ((subclassp (class msg) geometry_msgs::pose)
-      (setq pose msg)))
-    (ros2osc_pub
-     :ip *osc-host-ip*
-     :topic "/ballx"
-     :message (list (send (send pose :position) :x)))
-    (ros2osc_pub
-     :ip *osc-host-ip*
-     :topic "/bally"
-     :message (list (send (send pose :position) :y)))))
+  (cond
+   ((subclassp (class msg) geometry_msgs::posestamped)
+    (setq *now-pose* (send msg :pose)))
+   ((subclassp (class msg) geometry_msgs::pose)
+    (setq *now-pose* msg))))
 
-(ros::subscribe "/ros2osc/feedback"
-		std_msgs::string
-                #'str_echo
-		1)
+;;(ros::subscribe "/ros2osc/feedback"
+;;		std_msgs::string
+;;                #'str_echo
+;;		1)
 (ros::advertise "ros2osc/request"
                 ros2osc::ros2osc)
 (ros::subscribe *ros2osc-pose-topic-name*
@@ -81,10 +73,22 @@
                 #'pose-stamped-echo
 		1)
 
-
-(ros::rate *ros2osc-pose-hz*)
+(ros::rate (* 2 *ros2osc-pose-hz*))
 (do-until-key
  (if (not (ros::ok)) (return-from nil nil))
  (print 'running)
+ (setq *now-pose* nil)
  (ros::spin-once)
- (ros::sleep))
+ (ros::sleep)
+ (if *now-pose*
+     (ros2osc_pub
+      :ip *osc-host-ip*
+      :address "/ballx"
+      :message (list (send (send *now-pose* :position) :x))))
+ (ros::sleep)
+ (if *now-pose*
+     (ros2osc_pub
+      :ip *osc-host-ip*
+      :address "/bally"
+      :message (list (send (send *now-pose* :position) :y)))))
+
