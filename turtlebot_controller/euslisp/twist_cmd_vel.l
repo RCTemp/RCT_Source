@@ -20,7 +20,7 @@
 	'(:x :y :z)))
    '(:linear :angular)))
 
-(ros::advertise "/cmd_vel_mux/input/teleop"
+(ros::advertise "/teleop_node/mobile_base/commands/velocity"
                 geometry_msgs::twist)
 (ros::subscribe "/turtlebot_controller/twist_command"
 		geometry_msgs::twist
@@ -33,5 +33,5 @@
  (if (not (ros::ok)) (return-from nil nil))
  (print 'running)
  (ros::spin-once)
- (ros::publish "/cmd_vel_mux/input/teleop" *now-velocity*)
+ (ros::publish "/teleop_node/mobile_base/commands/velocity" *now-velocity*)
  (ros::sleep))
