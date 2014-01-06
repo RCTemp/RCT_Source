@@ -29,9 +29,19 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
+<<<<<<< HEAD
 rosbuild_add_executable(teleop_node_parser src/teleop_node_parser.cpp)
 rosbuild_add_executable(npc_node_parser src/npc_node_parser.cpp)
 rosbuild_add_executable(random_goals_publisher src/random_goals_publisher_node.cpp)
 
 
+=======
+rosbuild_add_executable(control_robot src/control_robot.cpp)
+
+rosbuild_add_executable(test_publisher src/test_publisher.cpp)
+
+rosbuild_add_executable(random_goals_publisher src/random_goals_publisher_node.cpp)
+
+rosbuild_add_executable(enemy_robot_control src/enemy_robot_control.cpp)
+>>>>>>> 097f413ce4def6096939092988b9ef41b82224a0
 
