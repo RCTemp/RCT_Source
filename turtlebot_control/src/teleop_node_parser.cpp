@@ -31,14 +31,30 @@ void GetPathCallback(const nav_msgs::PathConstPtr& path)
   }
 }
 
+void GetPathCallback(const geometry_msgs::Twist& cmd_vel)
+{
+  ROS_INFO("Got Velocity Command");
+  if(flag){
+    ROS_INFO("Publish cmd_vel");
+    ros::NodeHandle n;
+    ros::Publisher cmd_vel_pub = n.advertise<geometry_msgs::Twist>("/mobile_base/commands/velocity",1);    
+    cmd_vel_pub.publish(cmd_vel);
+  }else{
+    ROS_INFO("flag = false, not published");
+  }
+}
+
 
 int main(int argc,char** argv){
   flag = true;
   ros::init(argc, argv, "teleop_node_parser");
   ros::NodeHandle nh;
   ros::Subscriber origin_path_sub;
+  ros::Subscriber cmd_vel_sub;
   ros::Subscriber flag_sub;
+
   flag_sub = nh.subscribe("flag_from_master",1,GetFlagCallback); 
+  cmd_vel_sub = nh.subscribe("teleop/mobile_base/commands/velocity",1,GetFlagCallback); 
   origin_path_sub = nh.subscribe("path_from_UI",1,GetPathCallback);
   ros::spin();
   return 0;
