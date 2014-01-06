@@ -1,0 +1,13 @@
+<launch>
+  <arg name="turtlebot_name"  value="$(optenv TURTLEBOT_NAME unknown_node)" />
+
+  <node name="teleop_node_parser" pkg="turtlebot_control" type="teleop_node_parser">
+    <remap from="flag_from_master" to="$(arg turtlebot_name)/flag_from_master"/>
+  </node>
+
+  <include file="$(find rct_turtlebot)/launch/amcl_nav.launch" >
+    <arg name="turtlebot_name" value="$(arg turtlebot_name)" /> 
+  </include>
+
+
+</launch>

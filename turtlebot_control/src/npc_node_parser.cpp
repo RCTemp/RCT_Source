@@ -16,7 +16,7 @@ void GetGoalCallback(const geometry_msgs::PoseStampedConstPtr& goal)
   ROS_INFO("Got goal");
   if(flag){
     ros::NodeHandle n;
-    ros::Publisher enemy_goal_pub = n.advertise<geometry_msgs::PoseStamped>("enemy_simple_goal",1);
+    ros::Publisher enemy_goal_pub = n.advertise<geometry_msgs::PoseStamped>("simple_goal",1);
     enemy_goal_pub.publish(goal);
   }else{
     ROS_INFO("Flag = false, not published");
@@ -27,12 +27,12 @@ void GetGoalCallback(const geometry_msgs::PoseStampedConstPtr& goal)
 
 int main(int argc, char**argv){
   flag = true;
-  ros::init(argc, argv,"enemy_robot_control");
+  ros::init(argc, argv,"npc_node_parser");
   ros::NodeHandle nh;
   ros::Subscriber origin_goal_sub;
   ros::Subscriber flag_sub;
-  flag_sub = nh.subscribe("flag_for_enemy",1,GetFlagCallback);
-  origin_goal_sub = nh.subscribe("goal_from_publisher",1, GetGoalCallback);
+  flag_sub = nh.subscribe("flag_from_master",1,GetFlagCallback);
+  origin_goal_sub = nh.subscribe("random_goal",1, GetGoalCallback);
   ros::spin();
   return 0;
 }

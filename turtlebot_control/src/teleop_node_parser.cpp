@@ -34,7 +34,7 @@ void GetPathCallback(const nav_msgs::PathConstPtr& path)
 
 int main(int argc,char** argv){
   flag = true;
-  ros::init(argc, argv, "control_robot");
+  ros::init(argc, argv, "teleop_node_parser");
   ros::NodeHandle nh;
   ros::Subscriber origin_path_sub;
   ros::Subscriber flag_sub;
