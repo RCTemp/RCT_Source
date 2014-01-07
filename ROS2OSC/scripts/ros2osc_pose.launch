@@ -6,7 +6,7 @@
   <arg name="ROS2OSC_REQUEST_TOPIC" default="request" />
   <!-- for ros3osc_pose_pub_sub.l -->
   <arg name="ROS2OSC_POSE_TOPIC_NAME" default="/odom" />
-  <arg name="ROS2OSC_POSE_TOPIC_CLASS" default="geometry_msgs::posestamped" />
+  <arg name="ROS2OSC_POSE_TOPIC_CLASS" default="nav_msgs::odometry" />
   <arg name="ROS2OSC_POSE_HZ" default="3" />
   <!-- -->
   <node pkg="ROS2OSC" type="run_java.sh" name="ros2osc"
@@ -15,7 +15,7 @@
   </node>
   <!-- -->
   <node pkg="ROS2OSC" type="run_java.sh" name="osc_receiver"
-        args="$(find ROS2OSC)/scripts/OCSReceiver.jar 8000 /ballx /bally"
+        args="$(find ROS2OSC)/scripts/OCSReceiver.jar 8000 /position /contact"
         output="screen" >
   </node>
   <!-- -->
