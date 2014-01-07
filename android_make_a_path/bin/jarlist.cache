@@ -1,0 +1,23 @@
+# cache for current jar dependency. DO NOT EDIT.
+# format is <lastModified> <length> <SHA-1> <path>
+# Encoding is UTF-8
+1386765646000 49182 3c13aba497589b204fa934674ad9d7f393f823aa /home/y-tanaka/ros/groovy/android_core/android_honeycomb_mr2/libs/apache_xmlrpc_server-0.0.0-SNAPSHOT.jar
+1386765624000 49182 3c13aba497589b204fa934674ad9d7f393f823aa /home/y-tanaka/ros/groovy/android_core/android_gingerbread_mr1/libs/apache_xmlrpc_server-0.0.0-SNAPSHOT.jar
+1386765646000 315610 8141cb108e675d3b678c42e718d7f5c505320531 /home/y-tanaka/ros/groovy/android_core/android_honeycomb_mr2/libs/rosjava-0.0.0-SNAPSHOT.jar
+1386765624000 315610 8141cb108e675d3b678c42e718d7f5c505320531 /home/y-tanaka/ros/groovy/android_core/android_gingerbread_mr1/libs/rosjava-0.0.0-SNAPSHOT.jar
+1386765646000 111119 4572d589699f09d866a226a14b7f4323c6d8f040 /home/y-tanaka/ros/groovy/android_core/android_honeycomb_mr2/libs/commons-pool-1.6.jar
+1386765624000 111119 4572d589699f09d866a226a14b7f4323c6d8f040 /home/y-tanaka/ros/groovy/android_core/android_gingerbread_mr1/libs/commons-pool-1.6.jar
+1386765646000 1884927 2eeb8ad6dc8faf20250eb0b3a74a63e5de302c16 /home/y-tanaka/ros/groovy/android_core/android_honeycomb_mr2/libs/rosjava_messages-0.0.0-SNAPSHOT.jar
+1386765624000 1884927 2eeb8ad6dc8faf20250eb0b3a74a63e5de302c16 /home/y-tanaka/ros/groovy/android_core/android_gingerbread_mr1/libs/rosjava_messages-0.0.0-SNAPSHOT.jar
+1386765646000 438400 5708df81cf6dbff545695f0be6380b7bbc85accc /home/y-tanaka/ros/groovy/android_core/android_honeycomb_mr2/libs/dnsjava-2.1.1.jar
+1386765624000 438400 5708df81cf6dbff545695f0be6380b7bbc85accc /home/y-tanaka/ros/groovy/android_core/android_gingerbread_mr1/libs/dnsjava-2.1.1.jar
+1386765646000 1795936 5bc66dd95b79db1e437eb08adba124a3e4088dc0 /home/y-tanaka/ros/groovy/android_core/android_honeycomb_mr2/libs/guava-12.0.jar
+1386765624000 1795936 5bc66dd95b79db1e437eb08adba124a3e4088dc0 /home/y-tanaka/ros/groovy/android_core/android_gingerbread_mr1/libs/guava-12.0.jar
+1386765646000 124585 62a4d1d515d751522247a7ead7bc545841af6f0f /home/y-tanaka/ros/groovy/android_core/android_honeycomb_mr2/libs/rosjava_bootstrap-0.0.0-SNAPSHOT.jar
+1386765624000 124585 62a4d1d515d751522247a7ead7bc545841af6f0f /home/y-tanaka/ros/groovy/android_core/android_gingerbread_mr1/libs/rosjava_bootstrap-0.0.0-SNAPSHOT.jar
+1386765646000 33015 40719ea6961c0cb6afaeb6a921eaa1f6afd4cfdf /home/y-tanaka/ros/groovy/android_core/android_honeycomb_mr2/libs/jsr305-1.3.9.jar
+1386765624000 33015 40719ea6961c0cb6afaeb6a921eaa1f6afd4cfdf /home/y-tanaka/ros/groovy/android_core/android_gingerbread_mr1/libs/jsr305-1.3.9.jar
+1386765646000 34840 126e80ff798fece634bc94e61f8be8a8da00be60 /home/y-tanaka/ros/groovy/android_core/android_honeycomb_mr2/libs/ws-commons-util-1.0.1.jar
+1386765624000 34840 126e80ff798fece634bc94e61f8be8a8da00be60 /home/y-tanaka/ros/groovy/android_core/android_gingerbread_mr1/libs/ws-commons-util-1.0.1.jar
+1386765646000 61464 7657caf2c78e1d79c74d36f2ae128a115f7cc180 /home/y-tanaka/ros/groovy/android_core/android_honeycomb_mr2/libs/com.springsource.org.apache.commons.logging-1.1.1.jar
+1386765624000 61464 7657caf2c78e1d79c74d36f2ae128a115f7cc180 /home/y-tanaka/ros/groovy/android_core/android_gingerbread_mr1/libs/com.springsource.org.apache.commons.logging-1.1.1.jar
