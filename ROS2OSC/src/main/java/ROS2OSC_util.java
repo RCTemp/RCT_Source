@@ -95,23 +95,24 @@ public class ROS2OSC_util extends AbstractNodeMain {
 //		});
 
 		Subscriber<std_msgs.String> util = connectedNode.newSubscriber(
-				ROS2OSC_util.nodename + "/string/" + this.topic , std_msgs.String._TYPE);
+				ROS2OSC_util.nodename + "/string/" + this.topic,
+				std_msgs.String._TYPE);
 		util.addMessageListener(new MessageListener<std_msgs.String>() {
 			@Override
 			public void onNewMessage(std_msgs.String emp) {
-				ROS2OSC_util.this.oscEcho(emp.getData()) ;
+				ROS2OSC_util.this.oscEcho(emp.getData());
 			}
-		});
+		}, 10);
 
-		Subscriber<ROS2OSC.ros2osc> util2 = connectedNode.newSubscriber(
-				ROS2OSC_util.nodename + "/" + this.topic , ROS2OSC.ros2osc._TYPE);
+		Subscriber<ROS2OSC.ros2osc> util2 = connectedNode
+				.newSubscriber(ROS2OSC_util.nodename + "/" + this.topic,
+						ROS2OSC.ros2osc._TYPE);
 		util2.addMessageListener(new MessageListener<ROS2OSC.ros2osc>() {
 			@Override
 			public void onNewMessage(ROS2OSC.ros2osc msg) {
-				ROS2OSC_util.this.oscEcho(msg) ;
+				ROS2OSC_util.this.oscEcho(msg);
 			}
-		});
-
+		}, 10);
 		
 //		Subscriber<nav_msgs.Odometry> odom = connectedNode.newSubscriber(
 //				"/odom" , nav_msgs.Odometry._TYPE);
