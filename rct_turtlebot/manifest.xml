@@ -26,7 +26,6 @@ The move_base package provides an implementation of an action (see the <a href="
   <depend package="rosmsg"/>
   <depend package="rostopic"/>
   <depend package="std_srvs"/>
-  <depend package="multi_master_server"/>
   <depend package="dynamic_reconfigure"/>
 
   <rosdep name="eigen" />
