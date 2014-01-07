@@ -10,16 +10,24 @@
 (defvar *time-step* 0.1)
 (defun acc2vel
   (acc)
-  (mapcar
-   #'(lambda (v)
-       (mapcar
-	#'(lambda (k)
-	    (send (send *now-velocity* v) k
-		  ;;(+ (send (send *now-velocity* v) k)
-		  (* 1e-1
-		     (send (send acc v) k))))
-	'(:x :y :z)))
-   '(:linear :angular)))
+  (let ((max-v 0.05)
+	(max-r 0.05)
+	val)
+    (mapcar
+     #'(lambda (v max)
+	 (mapcar
+	  #'(lambda (k)
+	      (setq val
+		    (- (send (send acc v) k)
+		       (send (send *now-velocity* v) k)))
+	      (setq val
+		    (*
+		     (if (minusp val) -1 1)
+		     (min (abs val) max)))
+	      (send (send *now-velocity* v) k
+		    (+ val (send (send *now-velocity* v) k))))
+	  '(:x :y :z)))
+     '(:linear :angular) (list max-v max-r))))
 
 (defun scale-vel
   (scale)
@@ -45,5 +53,5 @@
  (print 'running)
  (ros::spin-once)
  (ros::publish "/cmd_vel_mux/input/teleop" *now-velocity*)
- (scale-vel 0.8)
+ (scale-vel 0.9)
  (ros::sleep))
