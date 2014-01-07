@@ -6,8 +6,9 @@
     <arg name="depth_processing" value="false" />
   </include>
 
-  <arg name="map_file" default="$(find rct_turtlebot)/maps/sample_map.yaml"/>
-  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" output="screen"/>
+  
+  <arg name="map_file" default="simaple_map"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find rct_turtlebot)/maps/$(arg map_file).yaml" output="screen"/>
 
   <arg name="initial_pose_x" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
   <arg name="initial_pose_y" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
