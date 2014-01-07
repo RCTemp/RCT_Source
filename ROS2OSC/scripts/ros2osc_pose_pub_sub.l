@@ -50,6 +50,7 @@
 		 (send osc :int buf)))
 	       osc)
 	   message))
+    ;;(describe msg)
     (ros::publish "ros2osc/request" msg)))
 
 (defvar *now-pose*)
@@ -73,7 +74,7 @@
                 #'pose-stamped-echo
 		1)
 
-(ros::rate (* 2 *ros2osc-pose-hz*))
+(ros::rate (* 1 *ros2osc-pose-hz*))
 (do-until-key
  (if (not (ros::ok)) (return-from nil nil))
  (print 'running)
@@ -83,12 +84,15 @@
  (if *now-pose*
      (ros2osc_pub
       :ip *osc-host-ip*
-      :address "/ballx"
-      :message (list (send (send *now-pose* :position) :x))))
- (ros::sleep)
- (if *now-pose*
-     (ros2osc_pub
-      :ip *osc-host-ip*
-      :address "/bally"
-      :message (list (send (send *now-pose* :position) :y)))))
+      :address "/position"
+      :message (list "controll"
+		     (send (send *now-pose* :position) :x)
+		     (send (send *now-pose* :position) :y))))
+ ;;(ros::sleep)
+ ;; (if *now-pose*
+ ;;     (ros2osc_pub
+ ;;      :ip *osc-host-ip*
+ ;;      :address "/bally"
+ ;;      :message (list (send (send *now-pose* :position) :y))))
+ )
 
