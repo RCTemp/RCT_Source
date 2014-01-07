@@ -22,9 +22,8 @@
 
   <include file="$(find rct_turtlebot)/launch/move_base.launch"/> 
 
-  -->
-  <arg name="turtlebot_name" default="unknown_node" />
-  <group ns="$(arg turtlebot_name)" >
+  <arg name="turtlebot_id" default="unknown_node" />
+  <group ns="$(arg turtlebot_id)" >
     <node name="pose_pub" pkg="rct_turtlebot" type="pose_pub"  />
   </group>
 

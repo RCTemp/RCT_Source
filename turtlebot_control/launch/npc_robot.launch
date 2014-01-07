@@ -10,7 +10,7 @@
   </node>
 
   <include file="$(find rct_turtlebot)/launch/amcl_nav.launch" >
-    <arg name="turtlebot_name" value="$(arg turtlebot_name)" /> 
+    <arg name="turtlebot_id" value="$(arg turtlebot_name)" /> 
   </include>
 
 </launch>
