@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_view"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/top_view"
+        android:layout_width="fill_parent"
+        android:layout_height="50dip"
+        android:background="#ff404040"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="50dip"
+            android:onClick="back"
+            android:text="Back" />
+        
+                <Button
+            android:id="@+id/choose_map_button"
+            android:layout_width="wrap_content"
+            android:layout_height="50dip"
+            android:onClick="chooserMap"
+            android:text="Choose a map" />
+
+                <Button
+                    android:id="@+id/send_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Send" />
+
+        <RadioGroup
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/set_pose_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="setPoseClicked"
+                android:checked="true"
+                android:text="Set Pose" />
+
+            <RadioButton
+                android:id="@+id/set_goal_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="setGoalClicked"
+                android:text="Set Goal" />
+
+            <RadioButton
+                android:id="@+id/set_path_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="setPathClicked"
+                android:text="Set Path" />
+
+            <LinearLayout
+                android:id="@+id/top_bar"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#ff404040"
+                android:gravity="right"
+                android:orientation="horizontal" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/main_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal" >
+    	<!-- コメント: map_viewをFrameLayoutに入れる. -->
+
+        <FrameLayout
+            android:id="@+id/main_frame_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight=".25" >
+
+            <org.ros.android.view.RosImageView
+                android:id="@+id/image"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight=".25"
+                android:src="@drawable/icon" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/side_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight=".75"
+            android:gravity="right"
+            android:orientation="vertical" >
+
+            <FrameLayout
+                android:id="@+id/frame_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight=".25" >
+
+                <org.ros.android.view.visualization.VisualizationView
+                    android:id="@+id/map_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".25" />
+
+                <!-- 独自クラスPathView -->
+                <org.ros.android.map_nav.PathView
+                    android:id="@+id/path_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".25" />
+
+            </FrameLayout>
+
+            <org.ros.android.view.VirtualJoystickView
+                android:id="@+id/virtual_joystick"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight=".25"
+                android:adjustViewBounds="true" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
