@@ -1,0 +1,33 @@
+<launch>
+  <arg name="LOCAL_IP" default="127.0.0.1"/>
+  <arg name="ROS_IP" default="$(arg LOCAL_IP)"/>
+  <arg name="ROS_MASTER_URI" default="http://$(arg LOCAL_IP):11311" />
+  <arg name="OSC_IP" default="$(arg LOCAL_IP)" />
+  <arg name="ROS2OSC_REQUEST_TOPIC" default="request" />
+  <!-- for ros3osc_pose_pub_sub.l -->
+  <arg name="ROS2OSC_POSE_TOPIC_NAME" default="/odom" />
+  <arg name="ROS2OSC_POSE_TOPIC_CLASS" default="geometry_msgs::posestamped" />
+  <arg name="ROS2OSC_POSE_HZ" default="3" />
+  <!-- -->
+  <node pkg="ROS2OSC" type="run_java.sh" name="ros2osc"
+	args="$(find ROS2OSC)/scripts/ROS2OCS.jar -r $(arg ROS_IP) -m $(arg ROS_MASTER_URI) -o $(arg OSC_IP) -t $(arg ROS2OSC_REQUEST_TOPIC)"
+	output="screen" >
+  </node>
+  <!-- -->
+  <node pkg="ROS2OSC" type="run_java.sh" name="osc_receiver"
+        args="$(find ROS2OSC)/scripts/OCSReceiver.jar 8000 /ballx /bally"
+        output="screen" >
+  </node>
+  <!-- -->
+  <node pkg="ROS2OSC" type="ros2osc_pose_pub_sub.l"
+	name="ros2osc_pose_pub_sub" output="screen" >
+    <env name="ROS2OSC_POSE_TOPIC_NAME"
+	 value="$(arg ROS2OSC_POSE_TOPIC_NAME)" />
+    <env name="ROS2OSC_POSE_TOPIC_CLASS"
+	 value="$(arg ROS2OSC_POSE_TOPIC_CLASS)" />
+    <env name="ROS2OSC_POSE_HZ"
+	 value="$(arg ROS2OSC_POSE_HZ)" />
+    <env name="OSC_HOST_IP"
+	 value="$(arg OSC_IP)" />
+  </node>
+</launch>
