@@ -115,7 +115,7 @@ public class CompressedImageView extends ImageView implements NodeMain {
 		if ( y == 0f ) y = (float) 1e-10 ;
 		float w = (float)Math.atan2(x, y) ;
 		if ( this.talker != null ){
-			this.talker.publish( 1e-1f * y, 0 , -1e-1f * w ) ;
+			this.talker.publish( 1e-0f * y, 0 , -1e-0f * w ) ;
 		}
 		return true;
 	}
