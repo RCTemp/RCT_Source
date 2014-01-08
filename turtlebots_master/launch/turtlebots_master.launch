@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <launch>
 
+  <!--multi master server -->
+  <include file="$(find multi_master_server)/launch/init.launch" />
+
   <node name="turtlebots_master" pkg="turtlebots_master" type="turtlebots_master_node" respawn="false" output="screen">
     <rosparam file="$(find turtlebots_master)/param/TurtlebotsMaster.yaml"/>
   </node>

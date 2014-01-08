@@ -13,22 +13,25 @@ teleopNodePub1Name: /teleop_node/stop_flag_from_master
 teleopNodePub1Type: std_msgs/Empty
 teleopNodePub2Name: /teleop_node/clear_flag_from_master
 teleopNodePub2Type: std_msgs/Empty
-teleopNodeSubName: /teleop_node/pose_pub
-teleopNodeSubType: geometry_msgs/PoseStamped
+teleopNodeSub1Name: /teleop_node/pose_pub
+teleopNodeSub1Type: geometry_msgs/PoseStamped
+teleopNodeSub2Name: /mobile_base/events/bumper
+teleopNodeSub2Type: kobuki_msgs/BumperEvent
+
 
 npc1NodeUri: http://157.82.5.92:11311
 npc1NodePub1Name: /npc1_node/stop_flag_from_master
 npc1NodePub1Type: std_msgs/Empty
 npc1NodePub2Name: /npc1_node/clear_flag_from_master
 npc1NodePub2Type: std_msgs/Empty
-npc1NodeSubName: /npc1_node/pose_pub
-npc1NodeSubType: geometry_msgs/PoseStamped
+npc1NodeSub1Name: /npc1_node/pose_pub
+npc1NodeSub1Type: geometry_msgs/PoseStamped
 
 npc2NodeUri: http://157.82.4.160:11311
-npc2NodePub2Name: /npc2_node/stop_flag_from_master
-npc2NodePub2Type: std_msgs/Empty
+npc2NodePub1Name: /npc2_node/stop_flag_from_master
+npc2NodePub1Type: std_msgs/Empty
 npc2NodePub2Name: /npc2_node/clear_flag_from_master
 npc2NodePub2Type: std_msgs/Empty
-npc2NodeSubName: /npc2_node/pose_pub
-npc2NodeSubType: geometry_msgs/PoseStamped
+npc2NodeSub1Name: /npc2_node/pose_pub
+npc2NodeSub1Type: geometry_msgs/PoseStamped
 

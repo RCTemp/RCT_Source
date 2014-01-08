@@ -179,32 +179,39 @@ void TurtlebotsMaster::multiMasterMsgRegistration()
       sub_type_list[0] = teleopNodeSub1Type_;
       sub_type_list[1] = teleopNodeSub2Type_;
 
-      if(turtlebotsMsgRegistrator.msgRegistration(teleopNodeUri_, pub_name_list, pub_type_list, sub_name_list, sub_type_list))
+      if(turtlebotsMsgRegistrator.msgRegistration(teleopNodeUri_, pub_name_list, pub_type_list, sub_name_list, sub_type_list) == 1)
         {
+          ROS_WARN("registration succeed");
           break;
         }
       ros::Duration(1.0).sleep();
     }
 
-  std::vector<std::string> pub_name_list(2);
-  pub_name_list[0] = npc1NodePub1Name_;
-  pub_name_list[1] = npc1NodePub2Name_;
-  std::vector<std::string> pub_type_list(2);
-  pub_type_list[0] = npc1NodePub1Type_;
-  pub_type_list[1] = npc1NodePub2Type_;
-  std::vector<std::string> sub_name_list(1);
-  sub_name_list[0] = npc1NodeSub1Name_;
-  std::vector<std::string> sub_type_list(1);
-  sub_type_list[0] = npc1NodeSub1Type_;
-  turtlebotsMsgRegistrator.msgRegistration(npc1NodeUri_, pub_name_list, pub_type_list,sub_name_list, sub_type_list);
-
-  pub_name_list[0] = npc2NodePub1Name_;
-  pub_name_list[1] = npc2NodePub2Name_;
-  pub_type_list[0] = npc2NodePub1Type_;
-  pub_type_list[1] = npc2NodePub2Type_;
-  sub_name_list[0] = npc2NodeSub1Name_;
-  sub_type_list[0] = npc2NodeSub1Type_;
-  turtlebotsMsgRegistrator.msgRegistration(npc2NodeUri_, pub_name_list, pub_type_list,sub_name_list, sub_type_list);
+  ros::Duration(0.1).sleep();
+  std::vector<std::string> pub_name_list1(2);
+  pub_name_list1[0] = npc1NodePub1Name_;
+  pub_name_list1[1] = npc1NodePub2Name_;
+  std::vector<std::string> pub_type_list1(2);
+  pub_type_list1[0] = npc1NodePub1Type_;
+  pub_type_list1[1] = npc1NodePub2Type_;
+  std::vector<std::string> sub_name_list1(1);
+  sub_name_list1[0] = npc1NodeSub1Name_;
+  std::vector<std::string> sub_type_list1(1);
+  sub_type_list1[0] = npc1NodeSub1Type_;
+  turtlebotsMsgRegistrator.msgRegistration(npc1NodeUri_, pub_name_list1, pub_type_list1,sub_name_list1, sub_type_list1);
+  
+  ros::Duration(0.1).sleep();
+  std::vector<std::string> pub_name_list2(2);
+  pub_name_list2[0] = npc2NodePub1Name_;
+  pub_name_list2[1] = npc2NodePub2Name_;
+  std::vector<std::string> pub_type_list2(2);
+  pub_type_list2[0] = npc2NodePub1Type_;
+  pub_type_list2[1] = npc2NodePub2Type_;
+  std::vector<std::string> sub_name_list2(1);
+  sub_name_list2[0] = npc2NodeSub1Name_;
+  std::vector<std::string> sub_type_list2(1);
+  sub_type_list2[0] = npc2NodeSub1Type_;
+  turtlebotsMsgRegistrator.msgRegistration(npc2NodeUri_, pub_name_list2, pub_type_list2,sub_name_list2, sub_type_list2);
 
 }
 

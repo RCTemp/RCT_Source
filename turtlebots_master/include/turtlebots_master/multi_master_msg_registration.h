@@ -14,7 +14,7 @@ class MultiMasterMsgRegistrator{
   MultiMasterMsgRegistrator(ros::NodeHandle nh, ros::NodeHandle nh_private, float msg_rate);
   ~MultiMasterMsgRegistrator();
 
-  bool msgRegistration(std::string ros_master_uri, std::vector<std::string> pub_name_list, std::vector<std::string> pub_type_list, std::vector<std::string> sub_name_list, std::vector<std::string> sub_type_list);
+ int msgRegistration(std::string ros_master_uri, std::vector<std::string> pub_name_list, std::vector<std::string> pub_type_list, std::vector<std::string> sub_name_list, std::vector<std::string> sub_type_list);
 
  private:
   ros::NodeHandle multiMasterMsgRegistratorNodeHandle_;

@@ -10,12 +10,11 @@ MultiMasterMsgRegistrator::~MultiMasterMsgRegistrator()
 }
 
 
-bool MultiMasterMsgRegistrator::msgRegistration(std::string ros_master_uri, std::vector<std::string> pub_name_list, std::vector<std::string> pub_type_list, std::vector<std::string> sub_name_list, std::vector<std::string> sub_type_list)
+int MultiMasterMsgRegistrator::msgRegistration(std::string ros_master_uri, std::vector<std::string> pub_name_list, std::vector<std::string> pub_type_list, std::vector<std::string> sub_name_list, std::vector<std::string> sub_type_list)
 {
   multi_master_server::RegisterMaster srv;
   srv.request.master = ros_master_uri;
   srv.request.rate = msgRate;
-
 
   for(int i = 0; i < (int)pub_name_list.size(); i++)
     {
@@ -36,12 +35,12 @@ bool MultiMasterMsgRegistrator::msgRegistration(std::string ros_master_uri, std:
   if (client.call(srv))
     {
       ROS_INFO("Result: %d",  srv.response.result);
-      return true;
+      return srv.response.result;
     }
   else
     {
       ROS_ERROR("Failed to call service for node %s ", ros_master_uri.c_str());
-      return false;
+      return 0;
     }
 
 }
