@@ -1,12 +1,17 @@
 <launch>
   <arg name="turtlebot_name"  value="$(optenv TURTLEBOT_NAME unknown_node)" />
 
-  <node name="teleop_node_parser" pkg="turtlebot_control" type="teleop_node_parser">
-    <remap from="flag_from_master" to="$(arg turtlebot_name)/flag_from_master"/>
+  <node name="teleop_node_conveyor" pkg="turtlebot_control" type="teleop_node_conveyor">
+    <remap from="stop_flag_from_master" to="$(arg turtlebot_name)/stop_flag_from_master"/>
+    <remap from="clear_flag_from_master" to="$(arg turtlebot_name)/clear_flag_from_master"/>
+    <param name="pathFromUI" value="path_from_ui" />
+    <param name="pathForTurtlebot" value="path_for_turtlebot" />
+    <param name="cmdVelFromUI" value="teleop/cmd_vel" />
+    <param name="cmdVelForTurtlebot" value="cmd_vel_mux/input/teleop" />
   </node>
 
   <include file="$(find rct_turtlebot)/launch/amcl_nav.launch" >
-    <arg name="turtlebot_name" value="$(arg turtlebot_name)" /> 
+    <arg name="turtlebot_id" value="$(arg turtlebot_name)" /> 
   </include>
 
 
