@@ -20,3 +20,7 @@ rosbuild_add_executable(bin/move_base src/move_base.cpp)
 rosbuild_link_boost(bin/move_base system)
 rosbuild_add_executable(bin/pose_pub src/pose_pub.cpp)
 
+# each_turtlebot_node
+rosbuild_add_executable(bin/teleop_node_conveyor src/teleop_node_conveyor.cpp)
+rosbuild_add_executable(bin/npc_node_conveyor src/npc_node_conveyor.cpp)
+rosbuild_add_executable(bin/random_goals_publisher src/random_goals_publisher.cpp)
