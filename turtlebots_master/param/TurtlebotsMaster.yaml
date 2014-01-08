@@ -9,20 +9,26 @@ inscribedRadius: 0.2
 #multi master msg rate
 multiMasterMsgRate: 50.0
 teleopNodeUri: http://teleopNode:11311
-teleopNodePubName: /teleop_node/flag_from_master
-teleopNodePubType: std_msgs/Bool
+teleopNodePub1Name: /teleop_node/stop_flag_from_master
+teleopNodePub1Type: std_msgs/Empty
+teleopNodePub2Name: /teleop_node/clear_flag_from_master
+teleopNodePub2Type: std_msgs/Empty
 teleopNodeSubName: /teleop_node/pose_pub
 teleopNodeSubType: geometry_msgs/PoseStamped
 
 npc1NodeUri: http://157.82.5.92:11311
-npc1NodePubName: /npc1_node/flag_from_master
-npc1NodePubType: std_msgs/Bool
+npc1NodePub1Name: /npc1_node/stop_flag_from_master
+npc1NodePub1Type: std_msgs/Empty
+npc1NodePub2Name: /npc1_node/clear_flag_from_master
+npc1NodePub2Type: std_msgs/Empty
 npc1NodeSubName: /npc1_node/pose_pub
 npc1NodeSubType: geometry_msgs/PoseStamped
 
 npc2NodeUri: http://157.82.4.160:11311
-npc2NodePubName: /npc2_node/flag_from_master
-npc2NodePubType: std_msgs/Bool
+npc2NodePub2Name: /npc2_node/stop_flag_from_master
+npc2NodePub2Type: std_msgs/Empty
+npc2NodePub2Name: /npc2_node/clear_flag_from_master
+npc2NodePub2Type: std_msgs/Empty
 npc2NodeSubName: /npc2_node/pose_pub
 npc2NodeSubType: geometry_msgs/PoseStamped
 

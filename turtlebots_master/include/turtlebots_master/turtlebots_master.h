@@ -3,6 +3,8 @@
 
 #include <ros/ros.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <std_msgs/Empty.h>
+#include <kobuki_msgs/BumperEvent.h>
 
 class TurtlebotsMaster{
  public : 
@@ -13,6 +15,7 @@ class TurtlebotsMaster{
   void paramInit();
   void multiMasterMsgRegistration();
   void teleopNodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg);
+  void teleopNodeBumperCallback(const kobuki_msgs::BumperEventConstPtr & bumper_msg);
   void npc1NodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg);
   void npc2NodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg);
   float distanceBetweenTwoNodes(float x1, float x2, float y1, float y2);
@@ -21,37 +24,51 @@ class TurtlebotsMaster{
  private:
   ros::NodeHandle turtlebotMasterNodeHandle_;
   ros::NodeHandle turtlebotMasterNodeHandlePrivate_;
-  ros::Subscriber teleopNodeSub_;
-  ros::Subscriber npc1NodeSub_;
-  ros::Subscriber npc2NodeSub_;
-  ros::Publisher teleopNodePub_;
-  ros::Publisher npc1NodePub_;
-  ros::Publisher npc2NodePub_;
+  ros::Subscriber teleopNodeSub1_; //pose
+  ros::Subscriber teleopNodeSub2_; //bumper
+  ros::Subscriber npc1NodeSub1_;    //pose
+  ros::Subscriber npc2NodeSub1_;    //pose
+  ros::Publisher  teleopNodePub1_; //stop_flag
+  ros::Publisher  teleopNodePub2_; //clear_flag
+  ros::Publisher  npc1NodePub1_;   //stop_flag
+  ros::Publisher  npc1NodePub2_;   //clear_flag
+  ros::Publisher  npc2NodePub1_;   //stop_flag
+  ros::Publisher  npc2NodePub2_;   //clear_flag
+
   ros::Timer  timer_;
 
   double loopRate_;
   double multiMasterMsgRate_;
   std::string teleopNodeUri_;
-  std::string teleopNodePubName_;
-  std::string teleopNodePubType_;
-  std::string teleopNodeSubName_;
-  std::string teleopNodeSubType_;
+  std::string teleopNodePub1Name_;
+  std::string teleopNodePub1Type_;
+  std::string teleopNodePub2Name_;
+  std::string teleopNodePub2Type_;
+  std::string teleopNodeSub1Name_;
+  std::string teleopNodeSub1Type_;
+  std::string teleopNodeSub2Name_;
+  std::string teleopNodeSub2Type_;
 
   std::string npc1NodeUri_;
-  std::string npc1NodePubName_;
-  std::string npc1NodePubType_;
-  std::string npc1NodeSubName_;
-  std::string npc1NodeSubType_;
+  std::string npc1NodePub1Name_;
+  std::string npc1NodePub1Type_;
+  std::string npc1NodePub2Name_;
+  std::string npc1NodePub2Type_;
+  std::string npc1NodeSub1Name_;
+  std::string npc1NodeSub1Type_;
 
   std::string npc2NodeUri_;
-  std::string npc2NodePubName_;
-  std::string npc2NodePubType_;
-  std::string npc2NodeSubName_;
-  std::string npc2NodeSubType_;
+  std::string npc2NodePub1Name_;
+  std::string npc2NodePub1Type_;
+  std::string npc2NodePub2Name_;
+  std::string npc2NodePub2Type_;
+  std::string npc2NodeSub1Name_;
+  std::string npc2NodeSub1Type_;
 
   double searchLightRadius_;
   double searchLightRange_;
   double inscribedRadius_;
+  double nodeIntervalThre_;
   float dDash;
 
 

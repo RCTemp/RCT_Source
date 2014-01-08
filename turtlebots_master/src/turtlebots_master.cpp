@@ -8,13 +8,19 @@ TurtlebotsMaster::TurtlebotsMaster(ros::NodeHandle nh, ros::NodeHandle nh_privat
   paramInit();
   multiMasterMsgRegistration();
 
-  teleopNodePub_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Bool>(teleopNodePubName_,1);
-  npc1NodePub_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Bool>(npc1NodePubName_,1);
-  npc2NodePub_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Bool>(npc1NodePubName_,1);
+  teleopNodePub1_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Empty>(teleopNodePub1Name_, 1);
+  teleopNodePub2_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Empty>(teleopNodePub2Name_, 1);
+  npc1NodePub1_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Empty>(npc1NodePub1Name_, 1);
+  npc1NodePub2_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Empty>(npc1NodePub2Name_, 1);
+  npc2NodePub1_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Empty>(npc2NodePub1Name_, 1);
+  npc2NodePub2_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Empty>(npc2NodePub2Name_, 1);
 
-  teleopNodeSub_ = turtlebotMasterNodeHandle_.subscribe<geometry_msgs::PoseStamped>(teleopNodeSubName_, 1, &TurtlebotsMaster::teleopNodePoseCallback, this, ros::TransportHints().tcpNoDelay());
-  npc1NodeSub_ = turtlebotMasterNodeHandle_.subscribe<geometry_msgs::PoseStamped>(npc1NodeSubName_, 1, &TurtlebotsMaster::teleopNodePoseCallback, this, ros::TransportHints().tcpNoDelay());
-  npc2NodeSub_ = turtlebotMasterNodeHandle_.subscribe<geometry_msgs::PoseStamped>(npc2NodeSubName_, 1, &TurtlebotsMaster::teleopNodePoseCallback, this, ros::TransportHints().tcpNoDelay());
+
+  teleopNodeSub1_ = turtlebotMasterNodeHandle_.subscribe<geometry_msgs::PoseStamped>(teleopNodeSub1Name_, 1, &TurtlebotsMaster::teleopNodePoseCallback, this, ros::TransportHints().tcpNoDelay());
+  teleopNodeSub2_ = turtlebotMasterNodeHandle_.subscribe<kobuki_msgs::BumperEvent>(teleopNodeSub2Name_, 1, &TurtlebotsMaster::teleopNodeBumperCallback, this, ros::TransportHints().tcpNoDelay());
+
+  npc1NodeSub1_ = turtlebotMasterNodeHandle_.subscribe<geometry_msgs::PoseStamped>(npc1NodeSub1Name_, 1, &TurtlebotsMaster::npc1NodePoseCallback, this, ros::TransportHints().tcpNoDelay());
+  npc2NodeSub1_ = turtlebotMasterNodeHandle_.subscribe<geometry_msgs::PoseStamped>(npc2NodeSub1Name_, 1, &TurtlebotsMaster::npc2NodePoseCallback, this, ros::TransportHints().tcpNoDelay());
 
 
   //temporarily initialization for turtlebots pose
@@ -62,6 +68,11 @@ void TurtlebotsMaster::paramInit()
 
   dDash = inscribedRadius_ / sin(searchLightRange_ / 2);
 
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("nodeIntervalThre", nodeIntervalThre_))
+    nodeIntervalThre_ = 0.4;
+  printf(" nodeIntervalThre_ is %.3f\n", nodeIntervalThre_);
+
+
   if (!turtlebotMasterNodeHandlePrivate_.getParam ("multiMasterMsgRate", multiMasterMsgRate_))
     multiMasterMsgRate_ = 40.0;
   printf(" multiMasterMsgRate_ is %.3f\n", multiMasterMsgRate_);
@@ -69,86 +80,132 @@ void TurtlebotsMaster::paramInit()
   if (!turtlebotMasterNodeHandlePrivate_.getParam ("teleopNodeUri", teleopNodeUri_))
     teleopNodeUri_ = std::string("empty");
   printf(" teleopNodeUri_ is %s\n", teleopNodeUri_.c_str());
-  if (!turtlebotMasterNodeHandlePrivate_.getParam ("teleopNodePubName", teleopNodePubName_))
-    teleopNodePubName_ = std::string("empty");
-  printf(" teleopNodePubName_ is %s\n", teleopNodePubName_.c_str());
-  if (!turtlebotMasterNodeHandlePrivate_.getParam ("teleopNodePubType", teleopNodePubType_))
-    teleopNodePubType_ = std::string("empty");
-  printf(" teleopNodePubType_ is %s\n", teleopNodePubType_.c_str());
-  if (!turtlebotMasterNodeHandlePrivate_.getParam ("teleopNodeSubName", teleopNodeSubName_))
-    teleopNodeSubName_ = std::string("empty");
-  printf(" teleopNodeSubName_ is %s\n", teleopNodeSubName_.c_str());
-  if (!turtlebotMasterNodeHandlePrivate_.getParam ("teleopNodeSubType", teleopNodeSubType_))
-    teleopNodeSubType_ = std::string("empty");
-  printf(" teleopNodeSubType_ is %s\n", teleopNodeSubType_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("teleopNodePub1Name", teleopNodePub1Name_))
+    teleopNodePub1Name_ = std::string("empty");
+  printf(" teleopNodePub1Name_ is %s\n", teleopNodePub1Name_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("teleopNodePub1Type", teleopNodePub1Type_))
+    teleopNodePub1Type_ = std::string("empty");
+  printf(" teleopNodePub1Type_ is %s\n", teleopNodePub1Type_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("teleopNodePub2Name", teleopNodePub2Name_))
+    teleopNodePub2Name_ = std::string("empty");
+  printf(" teleopNodePub2Name_ is %s\n", teleopNodePub2Name_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("teleopNodePub2Type", teleopNodePub2Type_))
+    teleopNodePub2Type_ = std::string("empty");
+  printf(" teleopNodePub2Type_ is %s\n", teleopNodePub2Type_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("teleopNodeSub1Name", teleopNodeSub1Name_))
+    teleopNodeSub1Name_ = std::string("empty");
+  printf(" teleopNodeSub1Name_ is %s\n", teleopNodeSub1Name_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("teleopNodeSub1Type", teleopNodeSub1Type_))
+    teleopNodeSub1Type_ = std::string("empty");
+  printf(" teleopNodeSub1Type_ is %s\n", teleopNodeSub1Type_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("teleopNodeSub2Name", teleopNodeSub2Name_))
+    teleopNodeSub2Name_ = std::string("empty");
+  printf(" teleopNodeSub2Name_ is %s\n", teleopNodeSub2Name_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("teleopNodeSub2Type", teleopNodeSub2Type_))
+    teleopNodeSub2Type_ = std::string("empty");
+  printf(" teleopNodeSub2Type_ is %s\n", teleopNodeSub2Type_.c_str());
 
-
+  
   if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc1NodeUri", npc1NodeUri_))
     npc1NodeUri_ = std::string("empty");
   printf(" npc1NodeUri_ is %s\n", npc1NodeUri_.c_str());
-  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc1NodePubName", npc1NodePubName_))
-    npc1NodePubName_ = std::string("empty");
-  printf(" npc1NodePubName_ is %s\n", npc1NodePubName_.c_str());
-  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc1NodePubType", npc1NodePubType_))
-    npc1NodePubType_ = std::string("empty");
-  printf(" npc1NodePubType_ is %s\n", npc1NodePubType_.c_str());
-  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc1NodeSubName", npc1NodeSubName_))
-    npc1NodeSubName_ = std::string("empty");
-  printf(" npc1NodeSubName_ is %s\n", npc1NodeSubName_.c_str());
-  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc1NodeSubType", npc1NodeSubType_))
-    npc1NodeSubType_ = std::string("empty");
-  printf(" npc1NodeSubType_ is %s\n", npc1NodeSubType_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc1NodePub1Name", npc1NodePub1Name_))
+    npc1NodePub1Name_ = std::string("empty");
+  printf(" npc1NodePub1Name_ is %s\n", npc1NodePub1Name_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc1NodePub1Type", npc1NodePub1Type_))
+    npc1NodePub1Type_ = std::string("empty");
+  printf(" npc1NodePub1Type_ is %s\n", npc1NodePub1Type_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc1NodePub2Name", npc1NodePub2Name_))
+    npc1NodePub2Name_ = std::string("empty");
+  printf(" npc1NodePub2Name_ is %s\n", npc1NodePub2Name_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc1NodePub2Type", npc1NodePub2Type_))
+    npc1NodePub2Type_ = std::string("empty");
+  printf(" npc1NodePub2Type_ is %s\n", npc1NodePub2Type_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc1NodeSub1Name", npc1NodeSub1Name_))
+    npc1NodeSub1Name_ = std::string("empty");
+  printf(" npc1NodeSub1Name_ is %s\n", npc1NodeSub1Name_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc1NodeSub1Type", npc1NodeSub1Type_))
+    npc1NodeSub1Type_ = std::string("empty");
+  printf(" npc1NodeSub1Type_ is %s\n", npc1NodeSub1Type_.c_str());
 
 
   if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc2NodeUri", npc2NodeUri_))
     npc2NodeUri_ = std::string("empty");
   printf(" npc2NodeUri_ is %s\n", npc2NodeUri_.c_str());
-  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc2NodePubName", npc2NodePubName_))
-    npc2NodePubName_ = std::string("empty");
-  printf(" npc2NodePubName_ is %s\n", npc2NodePubName_.c_str());
-  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc2NodePubType", npc2NodePubType_))
-    npc2NodePubType_ = std::string("empty");
-  printf(" npc2NodePubType_ is %s\n", npc2NodePubType_.c_str());
-  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc2NodeSubName", npc2NodeSubName_))
-    npc2NodeSubName_ = std::string("empty");
-  printf(" npc2NodeSubName_ is %s\n", npc2NodeSubName_.c_str());
-  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc2NodeSubType", npc2NodeSubType_))
-    npc2NodeSubType_ = std::string("empty");
-  printf(" npc2NodeSubType_ is %s\n", npc2NodeSubType_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc2NodePub1Name", npc2NodePub1Name_))
+    npc2NodePub1Name_ = std::string("empty");
+  printf(" npc2NodePub1Name_ is %s\n", npc2NodePub1Name_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc2NodePub1Type", npc2NodePub1Type_))
+    npc2NodePub1Type_ = std::string("empty");
+  printf(" npc2NodePub1Type_ is %s\n", npc2NodePub1Type_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc2NodePub2Name", npc2NodePub2Name_))
+    npc2NodePub2Name_ = std::string("empty");
+  printf(" npc2NodePub2Name_ is %s\n", npc2NodePub2Name_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc2NodePub2Type", npc2NodePub2Type_))
+    npc2NodePub2Type_ = std::string("empty");
+  printf(" npc2NodePub2Type_ is %s\n", npc2NodePub2Type_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc2NodeSub1Name", npc2NodeSub1Name_))
+    npc2NodeSub1Name_ = std::string("empty");
+  printf(" npc2NodeSub1Name_ is %s\n", npc2NodeSub1Name_.c_str());
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("npc2NodeSub1Type", npc2NodeSub1Type_))
+    npc2NodeSub1Type_ = std::string("empty");
+  printf(" npc2NodeSub1Type_ is %s\n", npc2NodeSub1Type_.c_str());
 
-  ROS_INFO("teleopNodeUri is %s, teleopNodePubName is %s, teleopNodePubType is %s, teleopNodeSubName is %s, teleopNodeSubType is %s",
-           teleopNodeUri_.c_str(), teleopNodePubName_.c_str(), teleopNodePubType_.c_str(), teleopNodeSubName_.c_str(), teleopNodeSubType_.c_str());
+  ROS_INFO("teleopNodeUri is %s, teleopNodePub1Name is %s, teleopNodePub1Type is %s, teleopNodePub1Name is %s, teleopNodePub1Type is %s, teleopNodeSub1Name is %s, teleopNodeSub1Type is %s, teleopNodeSub2Name is %s, teleopNodeSub2Type is %s", teleopNodeUri_.c_str(), teleopNodePub1Name_.c_str(), teleopNodePub1Type_.c_str(), teleopNodePub2Name_.c_str(), teleopNodePub2Type_.c_str(), teleopNodeSub1Name_.c_str(), teleopNodeSub1Type_.c_str(), teleopNodeSub2Name_.c_str(), teleopNodeSub2Type_.c_str());
 
-  ROS_INFO("npc1NodeUri is %s, npc1NodePubName is %s, npc1NodePubType is %s, npc1NodeSubName is %s, npc1NodeSubType is %s",
-           npc1NodeUri_.c_str(), npc1NodePubName_.c_str(), npc1NodePubType_.c_str(), npc1NodeSubName_.c_str(), npc1NodeSubType_.c_str());
+  ROS_INFO("npc1NodeUri is %s, npc1NodePub1Name is %s, npc1NodePub1Type is %s, npc1NodePub2Name is %s, npc1NodePub2Type is %s, npc1NodeSub1Name is %s, npc1NodeSub1Type is %s", npc1NodeUri_.c_str(), npc1NodePub1Name_.c_str(), npc1NodePub1Type_.c_str(), npc1NodePub2Name_.c_str(), npc1NodePub2Type_.c_str(), npc1NodeSub1Name_.c_str(), npc1NodeSub1Type_.c_str());
 
-  ROS_INFO("npc2NodeUri is %s, npc2NodePubName is %s, npc2NodePubType is %s, npc2NodeSubName is %s, npc2NodeSubType is %s",
-           npc2NodeUri_.c_str(), npc2NodePubName_.c_str(), npc2NodePubType_.c_str(), npc2NodeSubName_.c_str(), npc2NodeSubType_.c_str());
+  ROS_INFO("npc2NodeUri is %s, npc2NodePub1Name is %s, npc2NodePub1Type is %s, npc2NodePub2Name is %s, npc2NodePub2Type is %s, npc2NodeSub1Name is %s, npc2NodeSub1Type is %s", npc2NodeUri_.c_str(), npc2NodePub1Name_.c_str(), npc2NodePub1Type_.c_str(), npc2NodePub2Name_.c_str(), npc2NodePub2Type_.c_str(), npc2NodeSub1Name_.c_str(), npc2NodeSub1Type_.c_str());
 
 }
 
 void TurtlebotsMaster::multiMasterMsgRegistration()
 {
   MultiMasterMsgRegistrator turtlebotsMsgRegistrator(turtlebotMasterNodeHandle_,
-                                                     turtlebotMasterNodeHandlePrivate_,
-                                                     multiMasterMsgRate_);
+                                                     turtlebotMasterNodeHandlePrivate_, multiMasterMsgRate_);
+
   while(1)
     {
-      if(turtlebotsMsgRegistrator.msgRegistration(teleopNodeUri_,
-                                                 teleopNodePubName_,
-                                                 teleopNodePubType_,
-                                                 teleopNodeSubName_,
-                                                 teleopNodeSubType_))
+      std::vector<std::string> pub_name_list(2);
+      pub_name_list[0] = teleopNodePub1Name_;
+      pub_name_list[1] = teleopNodePub2Name_;
+      std::vector<std::string> pub_type_list(2);
+      pub_type_list[0] = teleopNodePub1Type_;
+      pub_type_list[1] = teleopNodePub2Type_;
+      std::vector<std::string> sub_name_list(2);
+      sub_name_list[0] = teleopNodeSub1Name_;
+      sub_name_list[1] = teleopNodeSub2Name_;
+      std::vector<std::string> sub_type_list(2);
+      sub_type_list[0] = teleopNodeSub1Type_;
+      sub_type_list[1] = teleopNodeSub2Type_;
+
+      if(turtlebotsMsgRegistrator.msgRegistration(teleopNodeUri_, pub_name_list, pub_type_list, sub_name_list, sub_type_list))
         {
           break;
         }
+      ros::Duration(1.0).sleep();
     }
-  turtlebotsMsgRegistrator.msgRegistration(npc1NodeUri_,
-                                          npc1NodePubName_, npc1NodePubType_,
-                                          npc1NodeSubName_, npc1NodeSubType_);
-  turtlebotsMsgRegistrator.msgRegistration(npc2NodeUri_,
-                                          npc2NodePubName_, npc2NodePubType_,
-                                          npc2NodeSubName_, npc2NodeSubType_);
+
+  std::vector<std::string> pub_name_list(2);
+  pub_name_list[0] = npc1NodePub1Name_;
+  pub_name_list[1] = npc1NodePub2Name_;
+  std::vector<std::string> pub_type_list(2);
+  pub_type_list[0] = npc1NodePub1Type_;
+  pub_type_list[1] = npc1NodePub2Type_;
+  std::vector<std::string> sub_name_list(1);
+  sub_name_list[0] = npc1NodeSub1Name_;
+  std::vector<std::string> sub_type_list(1);
+  sub_type_list[0] = npc1NodeSub1Type_;
+  turtlebotsMsgRegistrator.msgRegistration(npc1NodeUri_, pub_name_list, pub_type_list,sub_name_list, sub_type_list);
+
+  pub_name_list[0] = npc2NodePub1Name_;
+  pub_name_list[1] = npc2NodePub2Name_;
+  pub_type_list[0] = npc2NodePub1Type_;
+  pub_type_list[1] = npc2NodePub2Type_;
+  sub_name_list[0] = npc2NodeSub1Name_;
+  sub_type_list[0] = npc2NodeSub1Type_;
+  turtlebotsMsgRegistrator.msgRegistration(npc2NodeUri_, pub_name_list, pub_type_list,sub_name_list, sub_type_list);
+
 }
 
 void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
@@ -190,11 +247,9 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
           if(delta_r < inscribedRadius_)
             {
               ROS_WARN("turtlebot is found");
-              std_msgs::Bool found_flag;
-              found_flag.data = true;
-              teleopNodePub_.publish(found_flag);
-              npc1NodePub_.publish(found_flag);
-              npc2NodePub_.publish(found_flag);
+              teleopNodePub1_.publish(std_msgs::Empty());
+              npc1NodePub1_.publish(std_msgs::Empty());
+              npc2NodePub1_.publish(std_msgs::Empty());
               return;
             }
           else
@@ -205,11 +260,9 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
       else
         {
           ROS_WARN("turtlebot is found");
-          std_msgs::Bool found_flag;
-          found_flag.data = true;
-          teleopNodePub_.publish(found_flag);
-          npc1NodePub_.publish(found_flag);
-          npc2NodePub_.publish(found_flag);
+          teleopNodePub1_.publish(std_msgs::Empty());
+          npc1NodePub1_.publish(std_msgs::Empty());
+          npc2NodePub1_.publish(std_msgs::Empty());
           return;
         }
     }
@@ -250,11 +303,10 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
           if(delta_r < inscribedRadius_)
             {
               ROS_WARN("turtlebot is found");
-              std_msgs::Bool found_flag;
-              found_flag.data = true;
-              teleopNodePub_.publish(found_flag);
-              npc1NodePub_.publish(found_flag);
-              npc2NodePub_.publish(found_flag);
+              teleopNodePub1_.publish(std_msgs::Empty());
+              npc1NodePub1_.publish(std_msgs::Empty());
+              npc2NodePub1_.publish(std_msgs::Empty());
+
               return;
             }
           else
@@ -265,11 +317,9 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
       else
         {
           ROS_WARN("turtlebot is found");
-          std_msgs::Bool found_flag;
-          found_flag.data = true;
-          teleopNodePub_.publish(found_flag);
-          npc1NodePub_.publish(found_flag);
-          npc2NodePub_.publish(found_flag);
+          teleopNodePub1_.publish(std_msgs::Empty());
+          npc1NodePub1_.publish(std_msgs::Empty());
+          npc2NodePub1_.publish(std_msgs::Empty());
           return;
         }
     }
@@ -277,6 +327,7 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
 
 void TurtlebotsMaster::teleopNodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg)
 {
+  ROS_INFO("get teleop node pose");
   teleopNodeX = pose_msg->pose.position.x;
   teleopNodeY = pose_msg->pose.position.y;
   double roll, pitch, yaw;
@@ -288,8 +339,25 @@ void TurtlebotsMaster::teleopNodePoseCallback(const geometry_msgs::PoseStampedCo
   teleopNodeTheta = yaw;
 }
 
+void TurtlebotsMaster::teleopNodeBumperCallback(const kobuki_msgs::BumperEventConstPtr & bumper_msg)
+{
+  float delta_d1
+    = distanceBetweenTwoNodes(teleopNodeX, npc1NodeX, teleopNodeY, npc1NodeY);
+  float delta_d2 
+    = distanceBetweenTwoNodes(teleopNodeX, npc2NodeX, teleopNodeY, npc2NodeY);
+
+  if(delta_d1 < nodeIntervalThre_ || delta_d2 < nodeIntervalThre_)
+    {
+      ROS_WARN("touch the npc");
+      teleopNodePub2_.publish(std_msgs::Empty());
+      npc1NodePub2_.publish(std_msgs::Empty());
+      npc2NodePub2_.publish(std_msgs::Empty());
+    }
+}
+
 void TurtlebotsMaster::npc1NodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg)
 {
+  ROS_INFO("get npc1 node pose");
   npc1NodeX = pose_msg->pose.position.x;
   npc1NodeY = pose_msg->pose.position.y;
   double roll, pitch, yaw;
@@ -303,6 +371,7 @@ void TurtlebotsMaster::npc1NodePoseCallback(const geometry_msgs::PoseStampedCons
 
 void TurtlebotsMaster::npc2NodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg)
 {
+  ROS_INFO("get npc2 node pose");
   npc2NodeX = pose_msg->pose.position.x;
   npc2NodeY = pose_msg->pose.position.y;
   double roll, pitch, yaw;
