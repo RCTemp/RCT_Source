@@ -6,10 +6,13 @@
 #include <std_msgs/Empty.h>
 #include <kobuki_msgs/BumperEvent.h>
 
+#include <visualization_msgs/Marker.h> //debug
+
 class TurtlebotsMaster{
  public : 
   TurtlebotsMaster(ros::NodeHandle nh, ros::NodeHandle nh_private);
   ~TurtlebotsMaster();
+
 
   void masterFunc(const ros::TimerEvent & e);
   void paramInit();
@@ -81,6 +84,12 @@ class TurtlebotsMaster{
   float npc2NodeX;
   float npc2NodeY;
   float npc2NodeTheta;
+
+
+  //debug 
+  ros::Publisher npc1NodePub;
+  ros::Publisher teleopNodePub;
+  visualization_msgs::Marker teleopNodePoints;
 
 };
 #endif

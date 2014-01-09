@@ -28,16 +28,26 @@ TurtlebotsMaster::TurtlebotsMaster(ros::NodeHandle nh, ros::NodeHandle nh_privat
   teleopNodeY = 100;
   teleopNodeTheta = 0;
 
-  npc1NodeX = 100;
-  npc1NodeY = 100;
+  npc1NodeX = -100;
+  npc1NodeY = -100;
   npc1NodeTheta = 0;
 
-  npc2NodeX = -100;
-  npc2NodeY = -100;
+  npc2NodeX = 0;
+  npc2NodeY = 0;
   npc2NodeTheta = 0;
 
-
   timer_ = turtlebotMasterNodeHandlePrivate_.createTimer(ros::Duration(1.0 / loopRate_), &TurtlebotsMaster::masterFunc, this);
+
+  //debug
+  npc1NodePub = turtlebotMasterNodeHandle_.advertise<visualization_msgs::Marker>("npc1_node_point", 1);
+  teleopNodePub = turtlebotMasterNodeHandle_.advertise<visualization_msgs::Marker>("teleop_node_point", 1);
+
+  teleopNodePoints.header.frame_id = "/map";
+  teleopNodePoints.type = visualization_msgs::Marker::SPHERE_LIST;
+  teleopNodePoints.action = visualization_msgs::Marker::ADD;
+  teleopNodePoints.scale.x = 0.02;
+  teleopNodePoints.scale.y = 0.02;
+  teleopNodePoints.scale.z = 0.02;
 
 }
 
@@ -162,7 +172,8 @@ void TurtlebotsMaster::paramInit()
 void TurtlebotsMaster::multiMasterMsgRegistration()
 {
   MultiMasterMsgRegistrator turtlebotsMsgRegistrator(turtlebotMasterNodeHandle_,
-                                                     turtlebotMasterNodeHandlePrivate_, multiMasterMsgRate_);
+                                                     turtlebotMasterNodeHandlePrivate_,
+                                                     multiMasterMsgRate_);
 
   while(1)
     {
@@ -198,7 +209,7 @@ void TurtlebotsMaster::multiMasterMsgRegistration()
   sub_name_list1[0] = npc1NodeSub1Name_;
   std::vector<std::string> sub_type_list1(1);
   sub_type_list1[0] = npc1NodeSub1Type_;
-  //turtlebotsMsgRegistrator.msgRegistration(npc1NodeUri_, pub_name_list1, pub_type_list1,sub_name_list1, sub_type_list1);
+  turtlebotsMsgRegistrator.msgRegistration(npc1NodeUri_, pub_name_list1, pub_type_list1,sub_name_list1, sub_type_list1);
   
   ros::Duration(0.1).sleep();
   std::vector<std::string> pub_name_list2(2);
@@ -211,12 +222,15 @@ void TurtlebotsMaster::multiMasterMsgRegistration()
   sub_name_list2[0] = npc2NodeSub1Name_;
   std::vector<std::string> sub_type_list2(1);
   sub_type_list2[0] = npc2NodeSub1Type_;
-  //turtlebotsMsgRegistrator.msgRegistration(npc2NodeUri_, pub_name_list2, pub_type_list2,sub_name_list2, sub_type_list2);
+  turtlebotsMsgRegistrator.msgRegistration(npc2NodeUri_, pub_name_list2, pub_type_list2,sub_name_list2, sub_type_list2);
 
 }
 
+
 void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
 {
+  bool teleop_node_found_flag = false; 
+
   //compare with npc1
   float npc1_x_dash = npc1NodeX - dDash * cos(npc1NodeTheta);
   float npc1_y_dash = npc1NodeY - dDash * sin(npc1NodeTheta);
@@ -225,16 +239,18 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
     = distanceBetweenTwoNodes(teleopNodeX, npc1NodeX, teleopNodeY, npc1NodeY);
   float delta_theta 
     = inclinationBetweenTwoNodes(teleopNodeX, npc1_x_dash, teleopNodeY, npc1_y_dash) - npc1NodeTheta;
+  float delta_theta_dash
+    = inclinationBetweenTwoNodes(teleopNodeX, npc1NodeX, teleopNodeY, npc1NodeY) - npc1NodeTheta;
 
-  //ROS_INFO("npc1: delta_d is %f, delta_theta is %f", delta_d , delta_theta);
 
   if(delta_d < (searchLightRadius_ + inscribedRadius_) &&
-     fabs(delta_theta) < (searchLightRange_ / 2))
+     fabs(delta_theta) < (searchLightRange_ / 2) && 
+     fabs(delta_theta_dash) <  ((searchLightRange_ / 2) + M_PI / 2 ))
     {//distance and angle
 
-      float delta_theta_dash
-        = inclinationBetweenTwoNodes(teleopNodeX, npc1NodeX, teleopNodeY, npc1NodeY) - npc1NodeTheta;
-      if(delta_d > searchLightRadius_ && fabs(delta_theta_dash) > (searchLightRange_ / 2))
+
+      if(delta_d > searchLightRadius_ &&
+         fabs(delta_theta_dash) > (searchLightRange_ / 2))
         {
           float delta_r;
           if(delta_theta_dash > 0)
@@ -253,24 +269,12 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
 
           if(delta_r < inscribedRadius_)
             {
-              ROS_WARN("turtlebot is found");
-              teleopNodePub1_.publish(std_msgs::Empty());
-              npc1NodePub1_.publish(std_msgs::Empty());
-              npc2NodePub1_.publish(std_msgs::Empty());
-              return;
-            }
-          else
-            { 
-              ROS_INFO("turtlebot is not found");
+              teleop_node_found_flag = true;
             }
         }
       else
         {
-          ROS_WARN("turtlebot is found");
-          teleopNodePub1_.publish(std_msgs::Empty());
-          npc1NodePub1_.publish(std_msgs::Empty());
-          npc2NodePub1_.publish(std_msgs::Empty());
-          return;
+          teleop_node_found_flag = true;
         }
     }
 
@@ -281,15 +285,13 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
 
   delta_d = distanceBetweenTwoNodes(teleopNodeX, npc2NodeX, teleopNodeY, npc2NodeY);
   delta_theta = inclinationBetweenTwoNodes(teleopNodeX, npc2_x_dash, teleopNodeY, npc2_y_dash) - npc2NodeTheta;
-
-  //ROS_INFO("npc2: delta_d is %f, delta_theta is %f", delta_d , delta_theta);
+  delta_theta_dash = inclinationBetweenTwoNodes(teleopNodeX, npc2NodeX, teleopNodeY, npc2NodeY) - npc2NodeTheta;
 
   if(delta_d < (searchLightRadius_ + inscribedRadius_) &&
-     fabs(delta_theta) < (searchLightRange_ / 2))
+     fabs(delta_theta) < (searchLightRange_ / 2) &&
+     fabs(delta_theta_dash) <  ((searchLightRange_ / 2) + M_PI / 2 ))
     {//distance and angle
 
-      float delta_theta_dash
-        = inclinationBetweenTwoNodes(teleopNodeX, npc2NodeX, teleopNodeY, npc2NodeY) - npc2NodeTheta;
       if(delta_d > searchLightRadius_ && fabs(delta_theta_dash) > (searchLightRange_ / 2))
         {
           float delta_r;
@@ -308,33 +310,107 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
             }
 
           if(delta_r < inscribedRadius_)
-            {
-              ROS_WARN("turtlebot is found");
-              teleopNodePub1_.publish(std_msgs::Empty());
-              npc1NodePub1_.publish(std_msgs::Empty());
-              npc2NodePub1_.publish(std_msgs::Empty());
+              teleop_node_found_flag = true;
 
-              return;
-            }
-          else
-            { 
-              ROS_INFO("turtlebot is not found");
-            }
         }
       else
         {
-          ROS_WARN("turtlebot is found");
-          teleopNodePub1_.publish(std_msgs::Empty());
-          npc1NodePub1_.publish(std_msgs::Empty());
-          npc2NodePub1_.publish(std_msgs::Empty());
-          return;
+          teleop_node_found_flag = true;
         }
     }
+
+
+  if(teleop_node_found_flag)
+    {
+      //ROS_WARN("turtlebot is found");
+#if 0      //debug
+      if(delta_d < (searchLightRadius_ ) &&
+         fabs(delta_theta_dash) < ((searchLightRange_ / 2)))
+        {
+          teleopNodePoints.header.stamp = ros::Time::now();
+          geometry_msgs::Point teleop_node_point;
+          teleop_node_point.x = teleopNodeX;
+          teleop_node_point.y = teleopNodeY;
+          teleop_node_point.z = 0;
+          teleopNodePoints.points.push_back(teleop_node_point);
+          std_msgs::ColorRGBA teleop_node_point_color;
+          teleop_node_point_color.r = 1;
+          teleop_node_point_color.g = 0.55;
+          teleop_node_point_color.b = 0;
+          teleop_node_point_color.a = 1;
+          teleopNodePoints.colors.push_back(teleop_node_point_color);
+          teleopNodePub.publish(teleopNodePoints);
+        }
+      else
+        {
+          teleopNodePoints.header.stamp = ros::Time::now();
+          geometry_msgs::Point teleop_node_point;
+          teleop_node_point.x = teleopNodeX;
+          teleop_node_point.y = teleopNodeY;
+          teleop_node_point.z = 0;
+          teleopNodePoints.points.push_back(teleop_node_point);
+          std_msgs::ColorRGBA teleop_node_point_color;
+          teleop_node_point_color.r = 1;
+          teleop_node_point_color.g = 0;
+          teleop_node_point_color.b = 0;
+          teleop_node_point_color.a = 1;
+          teleopNodePoints.colors.push_back(teleop_node_point_color);
+          teleopNodePub.publish(teleopNodePoints);
+
+        }
+
+#endif
+      teleopNodePub1_.publish(std_msgs::Empty());
+      npc1NodePub1_.publish(std_msgs::Empty());
+      npc2NodePub1_.publish(std_msgs::Empty());
+    }
+  else
+    {
+      //ROS_INFO("turtlebot is not found");
+#if 0 //debug
+      teleopNodePoints.header.stamp = ros::Time::now();
+      geometry_msgs::Point teleop_node_point;
+      teleop_node_point.x = teleopNodeX;
+      teleop_node_point.y = teleopNodeY;
+      teleop_node_point.z = 0;
+      teleopNodePoints.points.push_back(teleop_node_point);
+      std_msgs::ColorRGBA teleop_node_point_color;
+      teleop_node_point_color.r = 0;
+      teleop_node_point_color.g = 0;
+      teleop_node_point_color.b = 1;
+      teleop_node_point_color.a = 1;
+      teleopNodePoints.colors.push_back(teleop_node_point_color);
+      teleopNodePub.publish(teleopNodePoints);
+#endif
+    }
+
+#if 0  //deubg
+  visualization_msgs::Marker npcNodePoint;
+  npcNodePoint.header.stamp = ros::Time::now();
+  npcNodePoint.header.frame_id = "/map";
+  npcNodePoint.type = visualization_msgs::Marker::SPHERE;
+  npcNodePoint.action = visualization_msgs::Marker::ADD;
+  npcNodePoint.pose.position.x = 0;
+  npcNodePoint.pose.position.y = 0;
+  npcNodePoint.pose.position.z = 0;
+  npcNodePoint.pose.orientation.x = 0.0;
+  npcNodePoint.pose.orientation.y = 0.0;
+  npcNodePoint.pose.orientation.z = 0.0;
+  npcNodePoint.pose.orientation.w = 1.0;
+  npcNodePoint.scale.x = 0.1;
+  npcNodePoint.scale.y = 0.1;
+  npcNodePoint.scale.z = 0.1;
+  npcNodePoint.color.a = 1.0;
+  npcNodePoint.color.r = 0.0;
+  npcNodePoint.color.g = 1.0;
+  npcNodePoint.color.b = 0.0;
+  npc1NodePub.publish(npcNodePoint);
+#endif
 }
 
 void TurtlebotsMaster::teleopNodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg)
 {
-  ROS_INFO("get teleop node pose");
+  //ROS_INFO("get teleop node pose");
   teleopNodeX = pose_msg->pose.position.x;
   teleopNodeY = pose_msg->pose.position.y;
   double roll, pitch, yaw;
@@ -344,6 +420,7 @@ void TurtlebotsMaster::teleopNodePoseCallback(const geometry_msgs::PoseStampedCo
                    pose_msg->pose.orientation.w);
   tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
   teleopNodeTheta = yaw;
+
 }
 
 void TurtlebotsMaster::teleopNodeBumperCallback(const kobuki_msgs::BumperEventConstPtr & bumper_msg)
@@ -374,6 +451,9 @@ void TurtlebotsMaster::npc1NodePoseCallback(const geometry_msgs::PoseStampedCons
                    pose_msg->pose.orientation.w);
   tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
   npc1NodeTheta = yaw;
+
+
+
 }
 
 void TurtlebotsMaster::npc2NodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg)
@@ -398,5 +478,5 @@ void TurtlebotsMaster::npc2NodePoseCallback(const geometry_msgs::PoseStampedCons
 
  float TurtlebotsMaster::inclinationBetweenTwoNodes(float x1, float x2, float y1, float y2)
  {
-   return atan2((x1 - x2), (y1 - y2));
+   return atan2((y1 - y2), (x1 - x2));
  }
