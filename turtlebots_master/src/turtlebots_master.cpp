@@ -198,7 +198,7 @@ void TurtlebotsMaster::multiMasterMsgRegistration()
   sub_name_list1[0] = npc1NodeSub1Name_;
   std::vector<std::string> sub_type_list1(1);
   sub_type_list1[0] = npc1NodeSub1Type_;
-  turtlebotsMsgRegistrator.msgRegistration(npc1NodeUri_, pub_name_list1, pub_type_list1,sub_name_list1, sub_type_list1);
+  //turtlebotsMsgRegistrator.msgRegistration(npc1NodeUri_, pub_name_list1, pub_type_list1,sub_name_list1, sub_type_list1);
   
   ros::Duration(0.1).sleep();
   std::vector<std::string> pub_name_list2(2);
@@ -211,7 +211,7 @@ void TurtlebotsMaster::multiMasterMsgRegistration()
   sub_name_list2[0] = npc2NodeSub1Name_;
   std::vector<std::string> sub_type_list2(1);
   sub_type_list2[0] = npc2NodeSub1Type_;
-  turtlebotsMsgRegistrator.msgRegistration(npc2NodeUri_, pub_name_list2, pub_type_list2,sub_name_list2, sub_type_list2);
+  //turtlebotsMsgRegistrator.msgRegistration(npc2NodeUri_, pub_name_list2, pub_type_list2,sub_name_list2, sub_type_list2);
 
 }
 
@@ -226,7 +226,7 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
   float delta_theta 
     = inclinationBetweenTwoNodes(teleopNodeX, npc1_x_dash, teleopNodeY, npc1_y_dash) - npc1NodeTheta;
 
-  ROS_INFO("npc1: delta_d is %f, delta_theta is %f", delta_d , delta_theta);
+  //ROS_INFO("npc1: delta_d is %f, delta_theta is %f", delta_d , delta_theta);
 
   if(delta_d < (searchLightRadius_ + inscribedRadius_) &&
      fabs(delta_theta) < (searchLightRange_ / 2))
@@ -282,7 +282,7 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
   delta_d = distanceBetweenTwoNodes(teleopNodeX, npc2NodeX, teleopNodeY, npc2NodeY);
   delta_theta = inclinationBetweenTwoNodes(teleopNodeX, npc2_x_dash, teleopNodeY, npc2_y_dash) - npc2NodeTheta;
 
-  ROS_INFO("npc2: delta_d is %f, delta_theta is %f", delta_d , delta_theta);
+  //ROS_INFO("npc2: delta_d is %f, delta_theta is %f", delta_d , delta_theta);
 
   if(delta_d < (searchLightRadius_ + inscribedRadius_) &&
      fabs(delta_theta) < (searchLightRange_ / 2))

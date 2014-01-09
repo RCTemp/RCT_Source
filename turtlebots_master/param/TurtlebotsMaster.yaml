@@ -8,7 +8,7 @@ inscribedRadius: 0.2
 
 #multi master msg rate
 multiMasterMsgRate: 50.0
-teleopNodeUri: http://teleopNode:11311
+teleopNodeUri: http://192.168.2.10:11311
 teleopNodePub1Name: /teleop_node/stop_flag_from_master
 teleopNodePub1Type: std_msgs/Empty
 teleopNodePub2Name: /teleop_node/clear_flag_from_master
@@ -19,7 +19,7 @@ teleopNodeSub2Name: /mobile_base/events/bumper
 teleopNodeSub2Type: kobuki_msgs/BumperEvent
 
 
-npc1NodeUri: http://157.82.5.92:11311
+npc1NodeUri: http://192.168.2.11:11311
 npc1NodePub1Name: /npc1_node/stop_flag_from_master
 npc1NodePub1Type: std_msgs/Empty
 npc1NodePub2Name: /npc1_node/clear_flag_from_master
@@ -27,7 +27,7 @@ npc1NodePub2Type: std_msgs/Empty
 npc1NodeSub1Name: /npc1_node/pose_pub
 npc1NodeSub1Type: geometry_msgs/PoseStamped
 
-npc2NodeUri: http://157.82.4.160:11311
+npc2NodeUri: http://192.168.2.12:11311
 npc2NodePub1Name: /npc2_node/stop_flag_from_master
 npc2NodePub1Type: std_msgs/Empty
 npc2NodePub2Name: /npc2_node/clear_flag_from_master
