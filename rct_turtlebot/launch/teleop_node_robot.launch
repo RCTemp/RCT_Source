@@ -1,5 +1,5 @@
 <launch>
-  <arg name="turtlebot_name"  value="$(optenv TURTLEBOT_NAME unknown_node)" />
+  <arg name="turtlebot_name"  default="unknown_node" />
 
   <node name="teleop_node_conveyor" pkg="turtlebot_control" type="teleop_node_conveyor">
     <remap from="stop_flag_from_master" to="$(arg turtlebot_name)/stop_flag_from_master"/>
@@ -10,9 +10,6 @@
     <param name="cmdVelForTurtlebot" value="cmd_vel_mux/input/teleop" />
   </node>
 
-  <include file="$(find rct_turtlebot)/launch/amcl_nav.launch" >
-    <arg name="turtlebot_id" value="$(arg turtlebot_name)" /> 
-  </include>
 
 
 </launch>

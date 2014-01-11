@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <launch>
-  <arg name="random_goal_flag"  default="true" />
-  <arg name="turtlebot_name"  value="$(optenv TURTLEBOT_NAME unknown_node)" />
 
-  <group if="$(arg random_goal_flag)">
-    <node name="random_goals_publisher" pkg="turtlebot_control" type="random_goals_publisher"/>
-  </group>
+  <arg name="turtlebot_name"  default="unknown_node" />
+
+  <node name="random_goals_publisher" pkg="turtlebot_control"
+        type="random_goals_publisher">
+    <param name="randMin" value="-1.0" />
+    <param name="randMax" value="1.0"  />
+    <param name="loopRate" value="1.0" />
+
+    <remap from="start_flag_from_master" to="$(arg turtlebot_name)/start_flag_from_master"/>
+  </node>
 
   <node name="npc_node_conveyor" pkg="turtlebot_control" type="npc_node_conveyor">
     <remap from="stop_flag_from_master" to="$(arg turtlebot_name)/stop_flag_from_master"/>
@@ -14,8 +19,5 @@
     <param name="goalForTurtlebot" value="simple_goal" />
   </node>
 
-  <include file="$(find rct_turtlebot)/launch/amcl_nav.launch" >
-    <arg name="turtlebot_id" value="$(arg turtlebot_name)" /> 
-  </include>
 
 </launch>

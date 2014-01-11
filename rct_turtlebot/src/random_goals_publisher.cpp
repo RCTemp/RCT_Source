@@ -7,10 +7,10 @@ int main(int argc, char** argv){
   ros::NodeHandle np("~");
 
   random_goal RandomGoal(n, np);
-  ros::Rate rate(0.2);
+
+  ros::Rate rate(RandomGoal.getLoopRate());
   
   while(ros::ok()){
-    RandomGoal.random_make_goal();
     RandomGoal.goalpublish();
     rate.sleep();
   }
