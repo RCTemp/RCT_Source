@@ -3,16 +3,18 @@
 
   <arg name="turtlebot_name"  default="unknown_node" />
 
-  <node name="random_goals_publisher" pkg="turtlebot_control"
-        type="random_goals_publisher">
+  <node name="random_goals_publisher" pkg="rct_turtlebot"
+        type="random_goals_publisher" output="screen">
     <param name="randMin" value="-1.0" />
     <param name="randMax" value="1.0"  />
     <param name="loopRate" value="1.0" />
 
-    <remap from="start_flag_from_master" to="$(arg turtlebot_name)/start_flag_from_master"/>
+    <remap from="cmd_from_master" to="$(arg turtlebot_name)/cmd_from_master"/>
+    <remap from="pose_pub" to="$(arg turtlebot_name)/pose_pub"/>
   </node>
 
-  <node name="npc_node_conveyor" pkg="turtlebot_control" type="npc_node_conveyor">
+  <node name="npc_node_conveyor" pkg="rct_turtlebot"
+        type="npc_node_conveyor" output="screen">
     <remap from="stop_flag_from_master" to="$(arg turtlebot_name)/stop_flag_from_master"/>
     <remap from="clear_flag_from_master" to="$(arg turtlebot_name)/clear_flag_from_master"/>
     <param name="goalFromUI" value="random_goal" />

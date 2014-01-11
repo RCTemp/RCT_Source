@@ -20,14 +20,14 @@ teleopNodeSub2Name: /mobile_base/events/bumper
 teleopNodeSub2Type: kobuki_msgs/BumperEvent
 
 
-npc1NodeConnectFlag: true
+npc1NodeConnectFlag: false
 npc1NodeUri: http://192.168.2.11:11311
 npc1NodePub1Name: /npc1_node/stop_flag_from_master
 npc1NodePub1Type: std_msgs/Empty
 npc1NodePub2Name: /npc1_node/clear_flag_from_master
 npc1NodePub2Type: std_msgs/Empty
-npc1NodePub3Name: /npc1_node/start_flag_from_master
-npc1NodePub3Type: std_msgs/Empty
+npc1NodePub3Name: /npc1_node/cmd_from_master
+npc1NodePub3Type: std_msgs/UInt8
 npc1NodeSub1Name: /npc1_node/pose_pub
 npc1NodeSub1Type: geometry_msgs/PoseStamped
 
@@ -37,9 +37,9 @@ npc2NodePub1Name: /npc2_node/stop_flag_from_master
 npc2NodePub1Type: std_msgs/Empty
 npc2NodePub2Name: /npc2_node/clear_flag_from_master
 npc2NodePub2Type: std_msgs/Empty
-npc2NodePub3Name: /npc2_node/start_flag_from_master
-npc2NodePub3Type: std_msgs/Empty
+npc2NodePub3Name: /npc2_node/cmd_from_master
+npc2NodePub3Type: std_msgs/UInt8
 npc2NodeSub1Name: /npc2_node/pose_pub
 npc2NodeSub1Type: geometry_msgs/PoseStamped
 
-npcNodesStartSubName: /start_cmd
+npcNodesStartSubName: /npc_nodes_cmd

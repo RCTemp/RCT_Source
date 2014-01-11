@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <std_msgs/Empty.h>
+#include <std_msgs/UInt8.h>
 #include <kobuki_msgs/BumperEvent.h>
 
 #include <visualization_msgs/Marker.h> //debug
@@ -19,11 +20,15 @@ class TurtlebotsMaster{
   void multiMasterMsgRegistration();
   void teleopNodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg);
   void teleopNodeBumperCallback(const kobuki_msgs::BumperEventConstPtr & bumper_msg);
-  void npcNodesStartCallback(const std_msgs::EmptyConstPtr & start_msg);
+  void npcNodesCmdCallback(const std_msgs::UInt8ConstPtr & cmd_msg);
   void npc1NodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg);
   void npc2NodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg);
   float distanceBetweenTwoNodes(float x1, float x2, float y1, float y2);
   float inclinationBetweenTwoNodes(float x1, float x2, float y1, float y2);
+
+  const static uint8_t STOP_CMD = 0;
+  const static uint8_t START_CMD = 1;
+
 
  private:
   ros::NodeHandle turtlebotMasterNodeHandle_;

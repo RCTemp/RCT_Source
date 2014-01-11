@@ -4,6 +4,7 @@
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
 #include <std_msgs/Empty.h>
+#include <std_msgs/UInt8.h>
 #include <geometry_msgs/PoseStamped.h>
 #include "tf/transform_broadcaster.h"
 
@@ -25,9 +26,18 @@ class random_goal{
         loopRate_ = 1.0;
       printf(" loopRate_ is %.3f\n", loopRate_);
 
+      if (!nh.getParam ("cmdFromMasterTopicName", cmdFromMasterTopicName_))
+        cmdFromMasterTopicName_ = std::string("cmd_from_master");
+      printf(" cmdFromMasterTopicName_ is %s\n", cmdFromMasterTopicName_.c_str());
+
+
+      if (!nh.getParam ("currPoseTopicName", currPoseTopicName_))
+        currPoseTopicName_ = std::string("pose_pub");
+      printf(" currPoseTopicName_ is %s\n", currPoseTopicName_.c_str());
 
       goal_pub = nh.advertise<geometry_msgs::PoseStamped>("random_goal",1);
-      start_sub = nh.subscribe<std_msgs::Empty>("start_flag_from_master", 1, &random_goal::startFlagCallback, this, ros::TransportHints().tcpNoDelay());
+      start_sub = nh.subscribe<std_msgs::UInt8>(cmdFromMasterTopicName_, 1, &random_goal::cmdCallback, this, ros::TransportHints().tcpNoDelay());
+      current_pose_sub = nh.subscribe<geometry_msgs::PoseStamped>(currPoseTopicName_, 1, &random_goal::currPoseCallback, this, ros::TransportHints().tcpNoDelay());
 
       srand((unsigned)time(NULL));
 
@@ -46,6 +56,7 @@ class random_goal{
         random_y = random;
         ROS_INFO("random_x is :%f, random_y is :%f", random_x, random_y);
 
+        geometry_msgs::PoseStamped goal_msg;
         goal_msg.header.stamp = ros::Time::now();
         goal_msg.header.frame_id = "/map";
         goal_msg.pose.position.x = random_x;
@@ -62,25 +73,53 @@ class random_goal{
       }
   }
 
-
-  void startFlagCallback(const std_msgs::EmptyConstPtr &start_msg)
+  void cmdCallback(const std_msgs::UInt8ConstPtr &cmd_msg)
   {
-    start_flag = true;
+    if(cmd_msg->data == START_CMD)
+      {
+        ROS_INFO("start send random goal");
+        start_flag = true;
+      }
+    else if(cmd_msg->data == STOP_CMD)
+      {
+        ROS_INFO("stop send random goal");
+        start_flag = false;
+
+#if 0         //TODO: set the current pose as goal
+        geometry_msgs::PoseStamped goal_msg;
+        goal_msg = current_pose;
+        goal_msg.header.stamp = ros::Time::now();
+        goal_msg.header.frame_id = "/map";
+#endif
+      }
   }
+
+  void currPoseCallback(const geometry_msgs::PoseStamped pose_msg)
+  {
+    current_pose = pose_msg;
+  }
+
 
   double getLoopRate()
   {
     return loopRate_;
   }
+
+  const static uint8_t STOP_CMD = 0;
+  const static uint8_t START_CMD = 1;
   
  private:
   ros::NodeHandle nh;
   ros::NodeHandle nh_private;
   ros::Publisher goal_pub; 
   ros::Subscriber start_sub; 
+  ros::Subscriber current_pose_sub; 
 
   bool start_flag;
-  geometry_msgs::PoseStamped goal_msg;
+
+  geometry_msgs::PoseStamped current_pose;
+  std::string currPoseTopicName_;
+  std::string cmdFromMasterTopicName_;
   double random_x;
   double random_y;
   

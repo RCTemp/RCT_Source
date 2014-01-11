@@ -1,7 +1,8 @@
 <launch>
   <arg name="turtlebot_name"  default="unknown_node" />
 
-  <node name="teleop_node_conveyor" pkg="turtlebot_control" type="teleop_node_conveyor">
+  <node name="teleop_node_conveyor" pkg="rct_turtlebot"
+        type="teleop_node_conveyor" output="screen">
     <remap from="stop_flag_from_master" to="$(arg turtlebot_name)/stop_flag_from_master"/>
     <remap from="clear_flag_from_master" to="$(arg turtlebot_name)/clear_flag_from_master"/>
     <param name="pathFromUI" value="path_from_ui" />

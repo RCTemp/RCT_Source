@@ -12,10 +12,10 @@ TurtlebotsMaster::TurtlebotsMaster(ros::NodeHandle nh, ros::NodeHandle nh_privat
   teleopNodePub2_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Empty>(teleopNodePub2Name_, 1);
   npc1NodePub1_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Empty>(npc1NodePub1Name_, 1);
   npc1NodePub2_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Empty>(npc1NodePub2Name_, 1);
-  npc1NodePub3_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Empty>(npc1NodePub3Name_, 1);
+  npc1NodePub3_ = turtlebotMasterNodeHandle_.advertise<std_msgs::UInt8>(npc1NodePub3Name_, 1);
   npc2NodePub1_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Empty>(npc2NodePub1Name_, 1);
   npc2NodePub2_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Empty>(npc2NodePub2Name_, 1);
-  npc2NodePub3_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Empty>(npc2NodePub3Name_, 1);
+  npc2NodePub3_ = turtlebotMasterNodeHandle_.advertise<std_msgs::UInt8>(npc2NodePub3Name_, 1);
 
 
   teleopNodeSub1_ = turtlebotMasterNodeHandle_.subscribe<geometry_msgs::PoseStamped>(teleopNodeSub1Name_, 1, &TurtlebotsMaster::teleopNodePoseCallback, this, ros::TransportHints().tcpNoDelay());
@@ -25,7 +25,7 @@ TurtlebotsMaster::TurtlebotsMaster(ros::NodeHandle nh, ros::NodeHandle nh_privat
   npc2NodeSub1_ = turtlebotMasterNodeHandle_.subscribe<geometry_msgs::PoseStamped>(npc2NodeSub1Name_, 1, &TurtlebotsMaster::npc2NodePoseCallback, this, ros::TransportHints().tcpNoDelay());
 
   //callback
-  npcNodesStartSub_ = turtlebotMasterNodeHandle_.subscribe<std_msgs::Empty>(npcNodesStartSubName_, 1, &TurtlebotsMaster::npcNodesStartCallback, this, ros::TransportHints().tcpNoDelay());
+  npcNodesStartSub_ = turtlebotMasterNodeHandle_.subscribe<std_msgs::UInt8>(npcNodesStartSubName_, 1, &TurtlebotsMaster::npcNodesCmdCallback, this, ros::TransportHints().tcpNoDelay());
 
   //temporarily initialization for turtlebots pose
   teleopNodeX = 100;
@@ -36,8 +36,8 @@ TurtlebotsMaster::TurtlebotsMaster(ros::NodeHandle nh, ros::NodeHandle nh_privat
   npc1NodeY = -100;
   npc1NodeTheta = 0;
 
-  npc2NodeX = 0;
-  npc2NodeY = 0;
+  npc2NodeX = -100;
+  npc2NodeY = -100;
   npc2NodeTheta = 0;
 
   timer_ = turtlebotMasterNodeHandlePrivate_.createTimer(ros::Duration(1.0 / loopRate_), &TurtlebotsMaster::masterFunc, this);
@@ -202,10 +202,12 @@ void TurtlebotsMaster::paramInit()
 
 void TurtlebotsMaster::multiMasterMsgRegistration()
 {
-  MultiMasterMsgRegistrator turtlebotsMsgRegistrator(turtlebotMasterNodeHandle_,
-                                                     turtlebotMasterNodeHandlePrivate_,
-                                                     multiMasterMsgRate_);
+  if(!teleopNodeConnectFlag_ && !npc1NodeConnectFlag_ && !npc2NodeConnectFlag_)
+    return;
 
+  MultiMasterMsgRegistrator turtlebotsMsgRegistrator(turtlebotMasterNodeHandle_,
+                                                     turtlebotMasterNodeHandlePrivate_, multiMasterMsgRate_);
+  
   if(teleopNodeConnectFlag_)
     {
       while(1)
@@ -366,7 +368,7 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
 
   if(teleop_node_found_flag)
     {
-      //ROS_WARN("turtlebot is found");
+      ROS_WARN("turtlebot is found");
 #if 0      //debug
       if(delta_d < (searchLightRadius_ ) &&
          fabs(delta_theta_dash) < ((searchLightRange_ / 2)))
@@ -454,7 +456,7 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
 
 void TurtlebotsMaster::teleopNodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg)
 {
-  //ROS_INFO("get teleop node pose");
+  ROS_INFO("get teleop node pose");
   teleopNodeX = pose_msg->pose.position.x;
   teleopNodeY = pose_msg->pose.position.y;
   double roll, pitch, yaw;
@@ -515,11 +517,26 @@ void TurtlebotsMaster::npc2NodePoseCallback(const geometry_msgs::PoseStampedCons
 }
 
 
-void TurtlebotsMaster::npcNodesStartCallback(const std_msgs::EmptyConstPtr & start_msg)
+void TurtlebotsMaster::npcNodesCmdCallback(const std_msgs::UInt8ConstPtr & cmd_msg)
 {
-  ROS_INFO("npc nodes start move");
-  npc1NodePub3_.publish(std_msgs::Empty());
-  npc2NodePub3_.publish(std_msgs::Empty());
+  if(cmd_msg->data == STOP_CMD)
+    {
+      ROS_INFO("get stop cmd for npc nodes");
+      std_msgs::UInt8 cmd_msgs;
+      cmd_msgs.data = STOP_CMD;
+      npc1NodePub3_.publish(cmd_msgs);
+      npc2NodePub3_.publish(cmd_msgs);
+    }
+  else if(cmd_msg->data == START_CMD)
+    {
+      ROS_INFO("get start cmd for npc nodes");
+      std_msgs::UInt8 cmd_msgs;
+      cmd_msgs.data = START_CMD;
+      npc1NodePub3_.publish(cmd_msgs);
+      npc2NodePub3_.publish(cmd_msgs);
+    }
+  else
+    ROS_WARN("get unknown cmd for npc nodes");
 }
 
  float TurtlebotsMaster::distanceBetweenTwoNodes(float x1, float x2, float y1, float y2)

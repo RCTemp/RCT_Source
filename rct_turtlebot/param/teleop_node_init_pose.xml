@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+
+  <env name="initial_pose_x" value="0.0"/> 
+  <env name="initial_pose_y" value="0.0"/> 
+  <env name="initial_pose_a" value="0.0"/>
+
+
+</launch>

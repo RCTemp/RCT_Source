@@ -13,6 +13,7 @@ int main(int argc, char** argv){
   while(ros::ok()){
     RandomGoal.goalpublish();
     rate.sleep();
+    ros::spinOnce();
   }
   return 0;
 }

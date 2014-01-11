@@ -1,0 +1,9 @@
+<launch>
+
+  <arg name="turtlebot_name" default="unknown_node" />
+  <group ns="$(arg turtlebot_name)" >
+    <node name="pose_pub" pkg="rct_turtlebot" type="pose_pub"  />
+  </group>
+
+</launch>
+

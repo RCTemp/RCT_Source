@@ -6,28 +6,18 @@
     <arg name="depth_processing" value="false" />
   </include>
 
-  
   <arg name="map_file" default="SMAB"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(find rct_turtlebot)/maps/$(arg map_file).yaml" output="screen"/> 
 
   <arg name="turtlebot_name" default="unknown_node" />
-  <include file="$(find rct_turtlebot)/param/$(arg turtlebot_name)_init_pose.xml">
-  <!--
-  <arg name="initial_pose_x" default="0.0"/> 
-  <arg name="initial_pose_y" default="0.0"/> 
-  <arg name="initial_pose_a" default="0.0"/>
-  -->
 
-  <include file="$(find turtlebot_navigation)/launch/includes/_amcl.launch">
-    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
-    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
-    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+  <include file="$(find rct_turtlebot)/launch/includes/_amcl.launch">
+      <arg name="turtlebot_name" value="$(arg turtlebot_name)" />
   </include>
 
   <include file="$(find rct_turtlebot)/launch/move_base.launch"/> 
 
-  <arg name="turtlebot_id" default="unknown_node" />
-  <group ns="$(arg turtlebot_id)" >
+  <group ns="$(arg turtlebot_name)" >
     <node name="pose_pub" pkg="rct_turtlebot" type="pose_pub"  />
   </group>
 

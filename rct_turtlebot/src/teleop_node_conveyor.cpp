@@ -42,13 +42,13 @@ public:
 
   void clearFlagCallback(const std_msgs::EmptyConstPtr& msg)
   {
-    ROS_INFO("Game Clear!!");
+    ROS_WARN("Game Clear!!");
     controlFlag=false;
   }
 
   void stopFlagCallback(const std_msgs::EmptyConstPtr& msg)
   {
-    ROS_INFO("Game Over!!");
+    ROS_ERROR("Game Over!!");
     controlFlag=false;
   }
 
