@@ -20,10 +20,10 @@
 
 (defvar *sampling-points*
   (list
-   (list #F(137 141) #F(1424.4 1322.2))
-   (list #F(139 -148) #F(1435 1322.2))
-   (list #F(-66 -143) #F(1435 1313))
-   (list #F(-71 120) #F(1424.4 1313))))
+   (list #F(1.37 1.41) #F(1424.4 1322.2))
+   (list #F(1.39 -1.48) #F(1435 1322.2))
+   (list #F(-0.66 -1.43) #F(1435 1313))
+   (list #F(-0.71 1.20) #F(1424.4 1313))))
 
 (defvar *R*)
 (defvar *b*)
@@ -56,8 +56,7 @@
   (setf (aref *R* 1 1) (aref param 3)))
 
 (defun transform-pos
-  (pos)
-  (v+ *b* (transform *R* pos)))
+  (pos) (v+ *b* (transform *R* pos)))
 
 (defun transform-rot
   (deg)
@@ -79,11 +78,18 @@
 	  (transform-pos (subseq (send msg :data) 0 2)))
     (setq rot
 	  (transform-rot (aref (send msg :data) 2)))
+    (format t "~A -> ~A~%"
+	    (concatenate float-vector
+			 (subseq (send msg :data) 0 2)
+			 (float-vector (aref (send msg :data) 2)))
+	    (concatenate float-vector
+			    pos (float-vector rot)))
     (ros::publish
      "/map_converter/converted_xyy"
      (instance std_msgs::float32multiarray :init
-	       :data (concatenate float-vector
-				  pos (float-vector rot))))))
+	       :data
+	       (concatenate float-vector
+			    pos (float-vector rot))))))
 
 (defun pose-echo
   (msg)
@@ -102,21 +108,19 @@
       :data
       (concatenate
        float-vector
-       (transform-pos
-	(float-vector
-	 (send (send pose :position) :x)
-	 (send (send pose :position) :y)))
        (float-vector
-	(transform-rot
-	 (rad2deg
-	  (aref
-	   (matrix-log
-	    (quaternion2matrix
-	     (map float-vector
-		  #'(lambda (k)
-		      (send (send pose :orientation) k))
-		  '(:w :x :y :z))))
-	   2)))))))))
+	(send (send pose :position) :x)
+	(send (send pose :position) :y))
+       (float-vector
+	(rad2deg
+	 (aref
+	  (matrix-log
+	   (quaternion2matrix
+	    (map float-vector
+		 #'(lambda (k)
+		     (send (send pose :orientation) k))
+		 '(:w :x :y :z))))
+	  2)))))))))
 
 (ros::advertise "/map_converter/converted_xyy"
 		std_msgs::float32multiarray 1)
@@ -134,3 +138,5 @@
  (ros::spin-once)
  (ros::sleep)
  )
+
+#| roseus map-converter.l  /map_converter/posestamped:=/npc1_node/pose_pub
