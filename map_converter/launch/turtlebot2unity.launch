@@ -1,0 +1,18 @@
+<launch>
+  <node pkg="map_converter"
+	type="map-converter.l"
+	name="npc1_mapconv"
+	output="screen" >
+    <remap from="/npc1_node/pose_pub"
+	   to="/map_converter/posestamped" />
+    <env name="MAPCONV_NODE_NAME" value="npc1_mapconv" />
+  </node>
+  <node pkg="map_converter"
+	type="map-converter.l"
+	name="npc2_mapconv"
+	output="screen" >
+    <remap from="/npc2_node/pose_pub"
+	   to="/map_converter/posestamped" />
+    <env name="MAPCONV_NODE_NAME" value="npc2_mapconv" />
+  </node>
+</launch>
