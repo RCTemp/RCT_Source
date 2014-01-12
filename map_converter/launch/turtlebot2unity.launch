@@ -1,18 +1,45 @@
 <launch>
+
+  <arg name="LOCAL_IP" default="$(env ROS_IP)"/>
+  <arg name="ROS_IP" default="$(arg LOCAL_IP)"/>
+  <arg name="ROS_MASTER_URI" default="$(env ROS_MASTER_URI)" />
+  <arg name="OSC_IP" default="$(arg LOCAL_IP)" />
+  <arg name="ROS2OSC_REQUEST_TOPIC" default="request" />
+
+  <node pkg="ROS2OSC" type="run_java.sh" name="ros2osc"
+        args="$(find ROS2OSC)/scripts/ROS2OCS.jar -r $(arg ROS_IP) -m $(arg ROS_MASTER_URI) -o $(arg OSC_IP) -t $(arg ROS2OSC_REQUEST_TOPIC)"
+        output="screen" >
+  </node>
+
+  <node pkg="ROS2OSC" type="run_java.sh" name="osc_receiver"
+        args="$(find ROS2OSC)/scripts/OCSReceiver.jar 8000 /position /contact"
+        output="screen" >
+  </node>
+
   <node pkg="map_converter"
-	type="map-converter.l"
+	type="map-converter-ros2osc.l"
 	name="npc1_mapconv"
 	output="screen" >
-    <remap from="/npc1_node/pose_pub"
-	   to="/npc1_mapconv/posestamped" />
-    <env name="MAPCONV_NODE_NAME" value="npc1_mapconv" />
+    <env name="MAPCONV_NODE_NAME"
+	 value="npc1_mapconv" />
+    <env name="MAPCONV_POSE_REQ_TOPIC_NAME"
+	 value="/npc1_node/pose_pub" />
+    <env name="TURTLEBOT_ID"
+	 value="npc1" />
+    <env name="OSC_HOST_IP"
+	 value="$(arg OSC_IP)" />
   </node>
   <node pkg="map_converter"
-	type="map-converter.l"
+	type="map-converter-ros2osc.l"
 	name="npc2_mapconv"
 	output="screen" >
-    <remap from="/npc2_node/pose_pub"
-	   to="/npc2_mapconv/posestamped" />
-    <env name="MAPCONV_NODE_NAME" value="npc2_mapconv" />
+    <env name="MAPCONV_NODE_NAME"
+	 value="npc2_mapconv" />
+    <env name="MAPCONV_POSE_REQ_TOPIC_NAME"
+	 value="/npc2_node/pose_pub" />
+    <env name="TURTLEBOT_ID"
+	 value="npc2" />
+    <env name="OSC_HOST_IP"
+	 value="$(arg OSC_IP)" />
   </node>
 </launch>
