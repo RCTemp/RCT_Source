@@ -10,6 +10,16 @@
       "map_converter"))
 (defvar *rosrun-hz* 10)
 
+(defvar *converted-xyy-topic-name*
+  (or (unix:getenv "MAPCONV_CONVERTED_TOPIC_NAME")
+      (format nil "/~A/converted_xyy" *node-name*)))
+(defvar *xyy-req-topic-name*
+  (or (unix:getenv "MAPCONV_FLOATARRAY_REQ_TOPIC_NAME")
+      (format nil "/~A/xyy" *node-name*)))
+(defvar *pose-req-topic-name*
+  (or (unix:getenv "MAPCONV_POSE_REQ_TOPIC_NAME")
+      (format nil "/~A/posestamped" *node-name*)))
+
 (ros::roseus *node-name*)
 
 (defvar *sampling-points*
@@ -79,7 +89,7 @@
 	    (concatenate float-vector
 			    pos (float-vector rot)))
     (ros::publish
-     "/map_converter/converted_xyy"
+     *converted-xyy-topic-name*
      (instance std_msgs::float32multiarray :init
 	       :data
 	       (concatenate float-vector
@@ -114,17 +124,17 @@
 		 #'(lambda (k)
 		     (send (send pose :orientation) k))
 		 '(:w :x :y :z))))
-	  2)))))))))
+	  2))))))))
 
 (ros::advertise
- (format nil "/~A/converted_xyy" *node-name*)
+ *converted-xyy-topic-name*
  std_msgs::float32multiarray 1)
 (ros::subscribe
- (format nil "/~A/xyy" *node-name*)
+ *xyy-req-topic-name*
  std_msgs::float32multiarray
  #'xyy-echo 1)
 (ros::subscribe
- (format nil "/~A/posestamped" *node-name*)
+ *pose-req-topic-name*
  geometry_msgs::posestamped
  #'pose-echo 1)
 
@@ -135,5 +145,3 @@
  (ros::spin-once)
  (ros::sleep)
  )
-
-#| roseus map-converter.l  /map_converter/posestamped:=/npc1_node/pose_pub
