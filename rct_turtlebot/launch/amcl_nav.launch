@@ -6,7 +6,7 @@
     <arg name="depth_processing" value="false" />
   </include>
 
-  <arg name="map_file" default="SMAB"/>
+  <arg name="map_file" default="SMRAB"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(find rct_turtlebot)/maps/$(arg map_file).yaml" output="screen"/> 
 
   <arg name="turtlebot_name" default="unknown_node" />
