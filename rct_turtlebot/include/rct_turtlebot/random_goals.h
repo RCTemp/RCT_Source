@@ -35,7 +35,7 @@ class random_goal{
         currPoseTopicName_ = std::string("pose_pub");
       printf(" currPoseTopicName_ is %s\n", currPoseTopicName_.c_str());
 
-      goal_pub = nh.advertise<geometry_msgs::PoseStamped>("random_goal",1);
+      goal_pub = nh.advertise<geometry_msgs::PoseStamped>("move_base_simple/goal",1);
       start_sub = nh.subscribe<std_msgs::UInt8>(cmdFromMasterTopicName_, 1, &random_goal::cmdCallback, this, ros::TransportHints().tcpNoDelay());
       current_pose_sub = nh.subscribe<geometry_msgs::PoseStamped>(currPoseTopicName_, 1, &random_goal::currPoseCallback, this, ros::TransportHints().tcpNoDelay());
 

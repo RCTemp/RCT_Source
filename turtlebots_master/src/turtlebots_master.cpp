@@ -256,11 +256,11 @@ void TurtlebotsMaster::multiMasterMsgRegistration()
   if(npc2NodeConnectFlag_)
     {
       ros::Duration(0.1).sleep();
-      std::vector<std::string> pub_name_list2(2);
+      std::vector<std::string> pub_name_list2(3);
       pub_name_list2[0] = npc2NodePub1Name_;
       pub_name_list2[1] = npc2NodePub2Name_;
       pub_name_list2[2] = npc2NodePub3Name_;
-      std::vector<std::string> pub_type_list2(2);
+      std::vector<std::string> pub_type_list2(3);
       pub_type_list2[0] = npc2NodePub1Type_;
       pub_type_list2[1] = npc2NodePub2Type_;
       pub_type_list2[2] = npc2NodePub3Type_;
