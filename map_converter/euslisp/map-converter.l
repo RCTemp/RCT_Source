@@ -5,18 +5,12 @@
 (ros::load-ros-manifest "kobuki_msgs")
 (ros::load-ros-manifest "nav_msgs")
 
-(ros::roseus "map_converter")
+(defvar *node-name*
+  (or (unix:getenv "MAPCONV_NODE_NAME")
+      "map_converter"))
+(defvar *rosrun-hz* 10)
 
-(defvar *pose-topic-name*
-  (or (unix:getenv "MAPCONV_POSE_TOPIC_NAME") "/odom"))
-(defvar *pose-topic-class*
-  (eval
-   (read-from-string
-    (or (unix:getenv "NAPCONV_POSE_TOPIC_CLASS")
-	"geometry_msgs::posestamped"))))
-(defvar *pose-hz*
-  (read-from-string
-   (or (unix:getenv "MAPCONV_POSE_HZ") "10")))
+(ros::roseus *node-name*)
 
 (defvar *sampling-points*
   (list
@@ -122,16 +116,19 @@
 		 '(:w :x :y :z))))
 	  2)))))))))
 
-(ros::advertise "/map_converter/converted_xyy"
-		std_msgs::float32multiarray 1)
-(ros::subscribe "/map_converter/xyy"
-		std_msgs::float32multiarray
-                #'xyy-echo 1)
-(ros::subscribe "/map_converter/posestamped"
-		geometry_msgs::posestamped
-                #'pose-echo 1)
+(ros::advertise
+ (format nil "/~A/converted_xyy" *node-name*)
+ std_msgs::float32multiarray 1)
+(ros::subscribe
+ (format nil "/~A/xyy" *node-name*)
+ std_msgs::float32multiarray
+ #'xyy-echo 1)
+(ros::subscribe
+ (format nil "/~A/posestamped" *node-name*)
+ geometry_msgs::posestamped
+ #'pose-echo 1)
 
-(ros::rate (* 1 *pose-hz*))
+(ros::rate *rosrun-hz*)
 (do-until-key
  (if (not (ros::ok)) (return-from nil nil))
  (print 'running)
