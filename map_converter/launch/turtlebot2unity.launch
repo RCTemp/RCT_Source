@@ -24,6 +24,10 @@
 	 value="npc1_mapconv" />
     <env name="MAPCONV_POSE_REQ_TOPIC_NAME"
 	 value="/npc1_node/pose_pub" />
+    <env name="CLEAR_TOPIC_NAME"
+	 value="/npc1_node/clear_flag_from_master" />
+    <env name="STOP_TOPIC_NAME"
+	 value="/npc1_node/stop_flag_from_master" />
     <env name="TURTLEBOT_ID"
 	 value="npc1" />
     <env name="OSC_HOST_IP"
@@ -37,8 +41,29 @@
 	 value="npc2_mapconv" />
     <env name="MAPCONV_POSE_REQ_TOPIC_NAME"
 	 value="/npc2_node/pose_pub" />
+    <env name="CLEAR_TOPIC_NAME"
+	 value="/npc2_node/clear_flag_from_master" />
+    <env name="STOP_TOPIC_NAME"
+	 value="/npc2_node/stop_flag_from_master" />
     <env name="TURTLEBOT_ID"
 	 value="npc2" />
+    <env name="OSC_HOST_IP"
+	 value="$(arg OSC_IP)" />
+  </node>
+  <node pkg="map_converter"
+	type="map-converter-ros2osc.l"
+	name="controll_mapconv"
+	output="screen" >
+    <env name="MAPCONV_NODE_NAME"
+	 value="controll_mapconv" />
+    <env name="MAPCONV_POSE_REQ_TOPIC_NAME"
+	 value="/teleop_node/pose_pub" />
+    <env name="CLEAR_TOPIC_NAME"
+	 value="/teleop_node/clear_flag_from_master" />
+    <env name="STOP_TOPIC_NAME"
+	 value="/teleop_node/stop_flag_from_master" />
+    <env name="TURTLEBOT_ID"
+	 value="controll" />
     <env name="OSC_HOST_IP"
 	 value="$(arg OSC_IP)" />
   </node>

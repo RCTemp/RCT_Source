@@ -25,6 +25,13 @@
 (defvar *turtlebot-id*
   (or (unix:getenv "TURTLEBOT_ID") "controll"))
 
+(defvar *clear-topic-name*
+  (or (unix:getenv "CLEAR_TOPIC_NAME")
+      (format nil "/~A/clear" *node-name*)))
+(defvar *stop-topic-name*
+  (or (unix:getenv "STOP_TOPIC_NAME")
+      (format nil "/~A/stop" *node-name*)))
+
 (ros::roseus *node-name*)
 
 (defvar *sampling-points*
@@ -131,6 +138,22 @@
 		 '(:w :x :y :z))))
 	  2))))))))
 
+(defun game-clear-echo
+  (msg)
+  (ros2osc_pub
+   :address "/game_clear"
+   :message
+   (list *turtlebot-id*))
+  )
+
+(defun game-stop-echo
+  (msg)
+  (ros2osc_pub
+   :address "/game_over"
+   :message
+   (list *turtlebot-id*))
+  )
+
 (defun ros2osc_pub
   (&key
    (ip *osc-host-ip*)
@@ -164,22 +187,30 @@
 
 (ros::advertise "ros2osc/request"
                 ros2osc::ros2osc)
-;; (ros::subscribe "/mobile_base/events/bumper"
-;; 		kobuki_msgs::BumperEvent
-;; 		#'bumper-echo
-;; 		1)
 
 (ros::advertise
  *converted-xyy-topic-name*
  std_msgs::float32multiarray 1)
+
 (ros::subscribe
  *xyy-req-topic-name*
  std_msgs::float32multiarray
  #'xyy-echo 1)
+
 (ros::subscribe
  *pose-req-topic-name*
  geometry_msgs::posestamped
  #'pose-echo 1)
+
+(ros::subscribe
+ *clear-topic-name*
+ std_msgs::empty
+ #'game-clear-echo 1)
+
+(ros::subscribe
+ *stop-topic-name*
+ std_msgs::empty
+ #'game-stop-echo 1)
 
 (ros::rate *rosrun-hz*)
 (do-until-key
