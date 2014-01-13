@@ -7,7 +7,7 @@
         type="random_goals_publisher" output="screen">
     <param name="randMin" value="-1.0" />
     <param name="randMax" value="1.0"  />
-    <param name="loopRate" value="1.0" />
+    <param name="loopRate" value="0.2" />
 
     <remap from="cmd_from_master" to="$(arg turtlebot_name)/cmd_from_master"/>
     <remap from="pose_pub" to="$(arg turtlebot_name)/pose_pub"/>
