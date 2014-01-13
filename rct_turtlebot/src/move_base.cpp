@@ -622,9 +622,10 @@ namespace rct_turtlebot {
 
       if(gotPlan){
 
+#if 0        
         for(int i=0; i < (int)planner_plan_->size(); i++)
           ROS_WARN("No.%d goal, target x is %f, frame id %s", i, planner_plan_->at(i).pose.position.x, planner_plan_->at(i).header.frame_id.c_str());
-
+#endif 
 
         ROS_DEBUG_NAMED("move_base_plan_thread","Got Plan with %zu points!", planner_plan_->size());
         //pointer swap the plans under mutex (the controller will pull from latest_plan_)
@@ -946,9 +947,10 @@ namespace rct_turtlebot {
       boost::unique_lock<boost::mutex> lock(planner_mutex_);
       controller_plan_ = latest_plan_;
       latest_plan_ = temp_plan;
+      #if 0
       for(int i=0; i < (int)controller_plan_->size(); i++)
         ROS_INFO("No.%d goal, target x is %f, frame id %s", i, controller_plan_->at(i).pose.position.x, controller_plan_->at(i).header.frame_id.c_str());
-
+      #endif
       lock.unlock();
       ROS_DEBUG_NAMED("move_base","pointers swapped!");
 

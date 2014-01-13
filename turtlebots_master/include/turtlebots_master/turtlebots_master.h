@@ -51,6 +51,7 @@ class TurtlebotsMaster{
 
   double loopRate_;
   double multiMasterMsgRate_;
+  
   bool teleopNodeConnectFlag_;
   std::string teleopNodeUri_;
   std::string teleopNodePub1Name_;
@@ -91,7 +92,7 @@ class TurtlebotsMaster{
   double inscribedRadius_;
   double nodeIntervalThre_;
   float dDash;
-
+  bool searchLightFlag_;
 
   float teleopNodeX;
   float teleopNodeY;

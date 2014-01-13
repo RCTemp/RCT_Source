@@ -10,16 +10,9 @@
     <param name="loopRate" value="0.2" />
 
     <remap from="cmd_from_master" to="$(arg turtlebot_name)/cmd_from_master"/>
-    <remap from="pose_pub" to="$(arg turtlebot_name)/pose_pub"/>
-  </node>
-
-  <node name="npc_node_conveyor" pkg="rct_turtlebot"
-        type="npc_node_conveyor" output="screen">
     <remap from="stop_flag_from_master" to="$(arg turtlebot_name)/stop_flag_from_master"/>
     <remap from="clear_flag_from_master" to="$(arg turtlebot_name)/clear_flag_from_master"/>
-    <param name="goalFromUI" value="random_goal" />
-    <param name="goalForTurtlebot" value="simple_goal" />
+    <remap from="pose_pub" to="$(arg turtlebot_name)/pose_pub"/>
   </node>
-
 
 </launch>
