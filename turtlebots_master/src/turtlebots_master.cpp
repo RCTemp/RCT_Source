@@ -40,7 +40,8 @@ TurtlebotsMaster::TurtlebotsMaster(ros::NodeHandle nh, ros::NodeHandle nh_privat
   npc2NodeY = -100;
   npc2NodeTheta = 0;
 
-  timer_ = turtlebotMasterNodeHandlePrivate_.createTimer(ros::Duration(1.0 / loopRate_), &TurtlebotsMaster::masterFunc, this);
+  if(searchLightFlag_)
+    timer_ = turtlebotMasterNodeHandlePrivate_.createTimer(ros::Duration(1.0 / loopRate_), &TurtlebotsMaster::masterFunc, this);
 
   //debug
   npc1NodePub = turtlebotMasterNodeHandle_.advertise<visualization_msgs::Marker>("npc1_node_point", 1);
@@ -197,6 +198,11 @@ void TurtlebotsMaster::paramInit()
   if (!turtlebotMasterNodeHandlePrivate_.getParam ("npcNodesStartSubName", npcNodesStartSubName_))
     npcNodesStartSubName_ = std::string("empty");
   printf(" npcNodesStartSubName_ is %s\n", npcNodesStartSubName_.c_str());
+
+  if (!turtlebotMasterNodeHandlePrivate_.getParam ("searchLightFlag", searchLightFlag_))
+    searchLightFlag_ = true;
+  printf(" searchLightFlag_ is %s\n", searchLightFlag_?("true"):("false"));
+
 
 }
 
@@ -456,7 +462,7 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
 
 void TurtlebotsMaster::teleopNodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg)
 {
-  ROS_INFO("get teleop node pose");
+  //ROS_INFO("get teleop node pose");
   teleopNodeX = pose_msg->pose.position.x;
   teleopNodeY = pose_msg->pose.position.y;
   double roll, pitch, yaw;
@@ -487,7 +493,7 @@ void TurtlebotsMaster::teleopNodeBumperCallback(const kobuki_msgs::BumperEventCo
 
 void TurtlebotsMaster::npc1NodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg)
 {
-  ROS_INFO("get npc1 node pose");
+  //ROS_INFO("get npc1 node pose");
   npc1NodeX = pose_msg->pose.position.x;
   npc1NodeY = pose_msg->pose.position.y;
   double roll, pitch, yaw;
@@ -504,7 +510,7 @@ void TurtlebotsMaster::npc1NodePoseCallback(const geometry_msgs::PoseStampedCons
 
 void TurtlebotsMaster::npc2NodePoseCallback(const geometry_msgs::PoseStampedConstPtr & pose_msg)
 {
-  ROS_INFO("get npc2 node pose");
+  //ROS_INFO("get npc2 node pose");
   npc2NodeX = pose_msg->pose.position.x;
   npc2NodeY = pose_msg->pose.position.y;
   double roll, pitch, yaw;

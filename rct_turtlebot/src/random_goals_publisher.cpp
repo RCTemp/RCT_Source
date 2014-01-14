@@ -8,13 +8,9 @@ int main(int argc, char** argv){
 
   random_goal RandomGoal(n, np);
 
-  ros::Rate rate(RandomGoal.getLoopRate());
   
-  while(ros::ok()){
-    RandomGoal.goalpublish();
-    rate.sleep();
-    ros::spinOnce();
-  }
+  ros::spin();
+
   return 0;
 }
   
