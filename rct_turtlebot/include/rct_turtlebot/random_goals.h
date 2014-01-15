@@ -14,13 +14,21 @@ class random_goal{
   random_goal(ros::NodeHandle node_handle, ros::NodeHandle node_handle_private)
     : nh(node_handle), nh_private(node_handle_private)
   {
-      if (!nh_private.getParam ("randMin", randMin_))
-        randMin_ = -1.0;
-      printf(" randMin_ is %.3f\n", randMin_);
+      if (!nh_private.getParam ("randMinX", randMinX_))
+        randMinX_ = -1.0;
+      printf(" randMinX_ is %.3f\n", randMinX_);
 
-      if (!nh_private.getParam ("randMax", randMax_))
-        randMax_ = 1.0;
-      printf(" randMax_ is %.3f\n", randMax_);
+      if (!nh_private.getParam ("randMaxX", randMaxX_))
+        randMaxX_ = 1.0;
+      printf(" randMaxX_ is %.3f\n", randMaxX_);
+
+      if (!nh_private.getParam ("randMinY", randMinY_))
+        randMinY_ = -1.0;
+      printf(" randMinY_ is %.3f\n", randMinY_);
+
+      if (!nh_private.getParam ("randMaxY", randMaxY_))
+        randMaxY_ = 1.0;
+      printf(" randMaxY_ is %.3f\n", randMaxY_);
 
       if (!nh_private.getParam ("loopRate", loopRate_))
         loopRate_ = 0.2;
@@ -61,9 +69,9 @@ class random_goal{
     if(start_flag)
       {
         double random;
-        random = randMin_ + (rand() % 100) / 100.0 * (randMax_ - randMin_); 
+        random = randMinX_ + (rand() % 100) / 100.0 * (randMaxX_ - randMinX_); 
         random_x = random;
-        random = randMin_ + (rand() % 100) / 100.0 * (randMax_ - randMin_); 
+        random = randMinY_ + (rand() % 100) / 100.0 * (randMaxY_ - randMinY_); 
         random_y = random;
 	
 	
@@ -182,8 +190,11 @@ class random_goal{
   double random_x;
   double random_y;
   
-  double randMax_;
-  double randMin_;
+  double randMaxX_;
+  double randMinX_;
+  double randMaxY_;
+  double randMinY_;
+
 
   double loopRate_;
 };
