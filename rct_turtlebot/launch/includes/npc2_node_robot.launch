@@ -5,9 +5,11 @@
 
   <node name="random_goals_publisher" pkg="rct_turtlebot"
         type="random_goals_publisher" output="screen">
-    <param name="randMin" value="-1.0" />
-    <param name="randMax" value="1.0"  />
-    <param name="loopRate" value="0.2" />
+    <param name="randMinX" value="-1.2" />
+    <param name="randMaxX" value="1.2"  />
+    <param name="randMinY" value="-1.5" />
+    <param name="randMaxY" value="0"  />
+    <param name="loopRate" value="0.4" />
 
     <remap from="cmd_from_master" to="$(arg turtlebot_name)/cmd_from_master"/>
     <remap from="stop_flag_from_master" to="$(arg turtlebot_name)/stop_flag_from_master"/>
