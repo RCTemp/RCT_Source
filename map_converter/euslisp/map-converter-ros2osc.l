@@ -36,10 +36,14 @@
 
 (defvar *sampling-points*
   (list
-   (list #F(1.37 1.41) #F(1424.4 1322.2))
-   (list #F(1.39 -1.48) #F(1435 1322.2))
-   (list #F(-0.66 -1.43) #F(1435 1313))
-   (list #F(-0.71 1.20) #F(1424.4 1313))))
+   ;; (list #F(1.37 1.41) #F(1424.4 1322.2))
+   ;; (list #F(1.39 -1.48) #F(1435 1322.2))
+   ;; (list #F(-0.66 -1.43) #F(1435 1313))
+   ;; (list #F(-0.71 1.20) #F(1424.4 1313))))
+   (list #F(1.2 1.5) #F(1424.4 1322.2))
+   (list #F(1.22 -1.64) #F(1435 1322.2))
+   (list #F(-1.2 -1.64) #F(1435 1313))
+   (list #F(-1.28 1.50) #F(1424.4 1313))))
 
 (defvar *R*)
 (defvar *b*)
@@ -214,10 +218,19 @@
 
 (ros::rate *rosrun-hz*)
 (do-until-key
- (if (not (ros::ok)) (return-from nil nil))
- (print 'running)
- (ros::spin-once)
- (ros::sleep)
+ (let ((timer (instance mtimer :init)))
+   (if (not (ros::ok)) (return-from nil nil))
+   (ros::spin-once)
+   (setq timer (send timer :stop))
+   (cond
+    ((> (/ 1.0 *rosrun-hz*) timer)
+     (unix:usleep
+      (round
+       (* 1000
+	  1000
+	  (+ (- (random 0.1) 0.05)
+	     (- (/ 1.0 *rosrun-hz*) timer))))))
+    (t (print 'overslept))))
  )
 
 

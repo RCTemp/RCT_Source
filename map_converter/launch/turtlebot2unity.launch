@@ -29,7 +29,7 @@
     <env name="STOP_TOPIC_NAME"
 	 value="/npc1_node/stop_flag_from_master" />
     <env name="TURTLEBOT_ID"
-	 value="npc1" />
+	 value="npc0" />
     <env name="OSC_HOST_IP"
 	 value="$(arg OSC_IP)" />
   </node>
@@ -46,7 +46,7 @@
     <env name="STOP_TOPIC_NAME"
 	 value="/npc2_node/stop_flag_from_master" />
     <env name="TURTLEBOT_ID"
-	 value="npc2" />
+	 value="npc1" />
     <env name="OSC_HOST_IP"
 	 value="$(arg OSC_IP)" />
   </node>
