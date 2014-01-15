@@ -8,7 +8,7 @@ inscribedRadius: 0.2
 
 #multi master msg rate
 multiMasterMsgRate: 50.0
-teleopNodeConnectFlag: true
+teleopNodeConnectFlag: false
 teleopNodeUri: http://192.168.2.10:11311
 teleopNodePub1Name: /teleop_node/stop_flag_from_master
 teleopNodePub1Type: std_msgs/Empty
@@ -31,7 +31,7 @@ npc1NodePub3Type: std_msgs/UInt8
 npc1NodeSub1Name: /npc1_node/pose_pub
 npc1NodeSub1Type: geometry_msgs/PoseStamped
 
-npc2NodeConnectFlag: false
+npc2NodeConnectFlag: true
 npc2NodeUri: http://192.168.2.12:11311
 npc2NodePub1Name: /npc2_node/stop_flag_from_master
 npc2NodePub1Type: std_msgs/Empty
