@@ -8,6 +8,10 @@
 (defvar *now-velocity*
   (instance geometry_msgs::twist :init))
 (defvar *time-step* 0.1)
+(defvar *target-topic*
+  (or (unix:getenv "TWIST_CMD_VEL_TOPIC")
+      "/cmd_vel_mux/input/teleop"))
+
 (defun acc2vel
   (acc)
   (let ((max-v 0.05)
@@ -40,7 +44,7 @@
 	'(:x :y :z)))
    '(:linear :angular)))
 
-(ros::advertise "/cmd_vel_mux/input/teleop"
+(ros::advertise *target-topic*
                 geometry_msgs::twist)
 (ros::subscribe "/turtlebot_controller/twist_command"
 		geometry_msgs::twist
@@ -52,6 +56,6 @@
  (if (not (ros::ok)) (return-from nil nil))
  (print 'running)
  (ros::spin-once)
- (ros::publish "/cmd_vel_mux/input/teleop" *now-velocity*)
+ (ros::publish *target-topic* *now-velocity*)
  (scale-vel 0.9)
  (ros::sleep))

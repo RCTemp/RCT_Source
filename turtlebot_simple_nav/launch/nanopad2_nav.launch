@@ -1,8 +1,14 @@
 <launch>
+  <arg name="TWIST_CMD_VEL_TOPIC"
+       default="/cmd_vel_mux/input/teleop" />
+
   <node pkg="turtlebot_simple_nav"
 	type="twist_cmd_vel.l"
 	name="twist_cmd_vel"
-	output="log" />
+	output="log">
+    <env name="TWIST_CMD_VEL_TOPIC"
+	 value="$(arg TWIST_CMD_VEL_TOPIC)" />
+  </node>
   <node pkg="jsk_joy"
 	type="nanopad2_joy.py"
 	name="nanopad2_joy"
