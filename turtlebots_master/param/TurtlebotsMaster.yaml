@@ -8,7 +8,7 @@ inscribedRadius: 0.2
 
 #multi master msg rate
 multiMasterMsgRate: 50.0
-teleopNodeConnectFlag: true
+teleopNodeConnectFlag: false
 teleopNodeUri: http://192.168.2.10:11311
 teleopNodePub1Name: /teleop_node/stop_flag_from_master
 teleopNodePub1Type: std_msgs/Empty
