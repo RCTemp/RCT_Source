@@ -1,0 +1,15 @@
+<launch>
+  <node pkg="turtlebot_simple_nav"
+	type="twist_cmd_vel.l"
+	name="twist_cmd_vel"
+	output="log" />
+  <node pkg="turtlebot_simple_nav"
+	type="joy2twist.l"
+	name="joy2twist"
+	output="log" />
+  <node pkg="jsk_joy"
+	type="test_joy.py"
+	name="test_joy"
+	args="simple_joy 0"
+	output="log" />
+</launch>

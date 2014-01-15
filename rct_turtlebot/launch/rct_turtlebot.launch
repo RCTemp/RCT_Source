@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+  <arg name="turtlebot_name"  value="$(optenv TURTLEBOT_NAME unknown_node)" />
+
+  <include file="$(find rct_turtlebot)/launch/includes/$(arg turtlebot_name)_robot.launch" >
+    <arg name="turtlebot_name" value="$(arg turtlebot_name)" />
+  </include>
+
+  <include file="$(find rct_turtlebot)/launch/amcl_nav.launch" >
+    <arg name="turtlebot_name" value="$(arg turtlebot_name)" />
+  </include>
+
+</launch>

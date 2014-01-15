@@ -8,21 +8,39 @@ inscribedRadius: 0.2
 
 #multi master msg rate
 multiMasterMsgRate: 50.0
-teleopNodeUri: http://teleopNode:11311
-teleopNodePubName: /teleop_node/flag_from_master
-teleopNodePubType: std_msgs/Bool
-teleopNodeSubName: /teleop_node/pose_pub
-teleopNodeSubType: geometry_msgs/PoseStamped
+teleopNodeConnectFlag: true
+teleopNodeUri: http://192.168.2.10:11311
+teleopNodePub1Name: /teleop_node/stop_flag_from_master
+teleopNodePub1Type: std_msgs/Empty
+teleopNodePub2Name: /teleop_node/clear_flag_from_master
+teleopNodePub2Type: std_msgs/Empty
+teleopNodeSub1Name: /teleop_node/pose_pub
+teleopNodeSub1Type: geometry_msgs/PoseStamped
+teleopNodeSub2Name: /mobile_base/events/bumper
+teleopNodeSub2Type: kobuki_msgs/BumperEvent
 
-npc1NodeUri: http://npc1Node:11311
-npc1NodePubName: /npc1_node/flag_from_master
-npc1NodePubType: std_msgs/Bool
-npc1NodeSubName: /npc1_node/pose_pub
-npc1NodeSubType: geometry_msgs/PoseStamped
 
-npc2NodeUri: http://npc2Node:11311
-npc2NodePubName: /npc2_node/flag_from_master
-npc2NodePubType: std_msgs/Bool
-npc2NodeSubName: /npc2_node/pose_pub
-npc2NodeSubType: geometry_msgs/PoseStamped
+npc1NodeConnectFlag: true
+npc1NodeUri: http://192.168.2.11:11311
+npc1NodePub1Name: /npc1_node/stop_flag_from_master
+npc1NodePub1Type: std_msgs/Empty
+npc1NodePub2Name: /npc1_node/clear_flag_from_master
+npc1NodePub2Type: std_msgs/Empty
+npc1NodePub3Name: /npc1_node/cmd_from_master
+npc1NodePub3Type: std_msgs/UInt8
+npc1NodeSub1Name: /npc1_node/pose_pub
+npc1NodeSub1Type: geometry_msgs/PoseStamped
 
+npc2NodeConnectFlag: false
+npc2NodeUri: http://192.168.2.12:11311
+npc2NodePub1Name: /npc2_node/stop_flag_from_master
+npc2NodePub1Type: std_msgs/Empty
+npc2NodePub2Name: /npc2_node/clear_flag_from_master
+npc2NodePub2Type: std_msgs/Empty
+npc2NodePub3Name: /npc2_node/cmd_from_master
+npc2NodePub3Type: std_msgs/UInt8
+npc2NodeSub1Name: /npc2_node/pose_pub
+npc2NodeSub1Type: geometry_msgs/PoseStamped
+
+npcNodesStartSubName: /npc_nodes_cmd
+searchLightFlag: false

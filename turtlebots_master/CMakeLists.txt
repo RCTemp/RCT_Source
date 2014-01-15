@@ -30,3 +30,5 @@ target_link_libraries(turtlebots_master_node turtlebots_master)
 #rosbuild_link_boost(${PROJECT_NAME} thread)
 
 #target_link_libraries(example ${PROJECT_NAME})
+
+rosbuild_add_executable(random_pose src/deprecated/random_pose.cpp)

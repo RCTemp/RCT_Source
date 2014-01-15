@@ -3,6 +3,8 @@
 (ros::load-ros-manifest "roseus")
 (ros::load-ros-manifest "ROS2OSC")
 (ros::load-ros-manifest "geometry_msgs")
+(ros::load-ros-manifest "kobuki_msgs")
+(ros::load-ros-manifest "nav_msgs")
 
 (ros::roseus "ros2osc_pose")
 
@@ -12,7 +14,7 @@
   (eval
    (read-from-string
     (or (unix:getenv "ROS2OSC_POSE_TOPIC_CLASS")
-	"geometry_msgs::posestamped"))))
+	"nav_msgs::odometry"))))
 (defvar *ros2osc-pose-hz*
   (read-from-string
    (or (unix:getenv "ROS2OSC_POSE_HZ") "10")))
@@ -53,6 +55,11 @@
     ;;(describe msg)
     (ros::publish "ros2osc/request" msg)))
 
+(defvar *bumper-val*)
+(defun bumper-echo
+  (msg)
+  (setq *bumper-val* (send msg :state)))
+
 (defvar *now-pose*)
 (defun pose-stamped-echo
   (msg)
@@ -60,7 +67,10 @@
    ((subclassp (class msg) geometry_msgs::posestamped)
     (setq *now-pose* (send msg :pose)))
    ((subclassp (class msg) geometry_msgs::pose)
-    (setq *now-pose* msg))))
+    (setq *now-pose* msg))
+   ((subclassp (class msg) nav_msgs::odometry)
+    (setq *now-pose*
+	  (send (send msg :pose) :pose)))))
 
 ;;(ros::subscribe "/ros2osc/feedback"
 ;;		std_msgs::string
@@ -73,21 +83,35 @@
 		;;geometry_msgs::posestamped
                 #'pose-stamped-echo
 		1)
+(ros::subscribe "/mobile_base/events/bumper"
+		kobuki_msgs::BumperEvent
+		#'bumper-echo
+		1)
 
 (ros::rate (* 1 *ros2osc-pose-hz*))
 (do-until-key
  (if (not (ros::ok)) (return-from nil nil))
  (print 'running)
- (setq *now-pose* nil)
  (ros::spin-once)
  (ros::sleep)
- (if *now-pose*
-     (ros2osc_pub
-      :ip *osc-host-ip*
-      :address "/position"
-      :message (list "controll"
-		     (send (send *now-pose* :position) :x)
-		     (send (send *now-pose* :position) :y))))
+ (cond
+  (*bumper-val*
+   (print 'echo-bumper)
+   (ros2osc_pub
+    :ip *osc-host-ip*
+    :address "/contact"
+    :message (list "controll" *bumper-val*))
+   (setq *bumper-val* nil))
+  (*now-pose*
+   (print 'echo-position)
+   (ros2osc_pub
+    :ip *osc-host-ip*
+    :address "/position"
+    :message (list "controll"
+		   (send (send *now-pose* :position) :x)
+		   (send (send *now-pose* :position) :y)))
+   (setq *now-pose* nil))
+  )
  ;;(ros::sleep)
  ;; (if *now-pose*
  ;;     (ros2osc_pub
@@ -95,4 +119,3 @@
  ;;      :address "/bally"
  ;;      :message (list (send (send *now-pose* :position) :y))))
  )
-

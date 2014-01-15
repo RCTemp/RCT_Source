@@ -31,6 +31,7 @@ int main(int argc, char** argv){
 
     geometry_msgs::PoseStamped pose_msg;
     pose_msg.header.stamp = transform.stamp_;
+    pose_msg.header.frame_id = "/map";
     pointTFToMsg(transform.getOrigin(), pose_msg.pose.position);
     quaternionTFToMsg(transform.getRotation(), pose_msg.pose.orientation);
     pose_pub.publish(pose_msg);

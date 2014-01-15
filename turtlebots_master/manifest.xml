@@ -13,6 +13,7 @@
   <depend package="multi_master_server"/>
   <depend package="geometry_msgs"/>
   <depend package="tf"/>
+  <depend package="kobuki_msgs"/>
 
 </package>
 
