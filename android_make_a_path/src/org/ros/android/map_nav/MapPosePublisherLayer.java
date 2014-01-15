@@ -22,6 +22,7 @@ import org.ros.rosjava_geometry.Transform;
 import org.ros.rosjava_geometry.Vector3;
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.graphics.Point; // 追加
@@ -50,7 +51,7 @@ public class MapPosePublisherLayer extends DefaultLayer {
 	private int mode;
 	private static final int POSE_MODE = 0;
 	private static final int GOAL_MODE = 1;
-	private static final int PATH_MODE = 2; // パス設定モード追加
+	// private static final int PATH_MODE = 2; // パス設定モード追加
 
 	public MapPosePublisherLayer(String topic, Context context) {
 		this(GraphName.of(topic), context); // 別のコンストラクタを呼ぶ
@@ -67,16 +68,17 @@ public class MapPosePublisherLayer extends DefaultLayer {
 	}
 
 	public void setGoalMode() {
+		Log.d("setGoal", "setGoal");
 		mode = GOAL_MODE;
 	}
 	// PATH_MODEの設定
-	public void setPathMode() {
+	/* public void setPathMode() {
 		mode = PATH_MODE;
-	}
+	} */
 	// visibleの設定
-	public void setVisible(boolean flag) {
+	/* public void setVisible(boolean flag) {
 		visible = flag;
-	}
+	} */
 
 	// OpenGL10で描画
 	@Override
@@ -96,8 +98,7 @@ public class MapPosePublisherLayer extends DefaultLayer {
 		return Math.atan2(deltaY, deltaX);
 	}
 	
-	// 通常はMainActivityで個別実装だが, こちらは拡張クラスなので,
-	// 事前にonTouchEventを実装している. 
+	// 通常はMainActivityで個別実装だが, こちらは拡張クラスなので, 事前にonTouchEventを実装している. 
 	// mapPosePublisherLayerがMainActivityに生成された時点で有効
 	// ACTION_DOWNで起動. 動かすと, ACTION_MOVEに移行. ACTION_UPで終了.
 	// ここにパス描画機能を実装すればスマートだが, 時間がかかりそう.
@@ -225,14 +226,22 @@ public class MapPosePublisherLayer extends DefaultLayer {
 				// MAP_FRAME基準でfixedPose生成
 				// path.get(i+1)と比較して角度生成
 				if (i == path.size()-1) {
-					
+					visible = false;
+					return;
 				} else {
+					visible = true;
+					// zを0にして, Vector3型にして, Quaternion.identity(), (x,y,z,w) = (0,0,0,1)を付加
+					pose = Transform.translation(camera.toMetricCoordinates(path.get(i).x, path.get(i).y));
+					camera.setFrame(MAP_FRAME); // tfのをmapフレームに設定
+					fixedPose = Transform.translation(camera.toMetricCoordinates(path.get(i).x,path.get(i).y));
+					
 					camera.setFrame(MAP_FRAME);
-					Vector3 vector3 = new Vector3(path.get(i).x, path.get(i).y, 0);
-					poseVector = fixedPose.apply(vector3); // 最初はVector3.zeroに設定されていた. なぜ?
+					Vector3 vector3 = new Vector3(path.get(i).x, path.get(i).y, 0); // 追加
+					// poseVector = fixedPose.apply(vector3); // 最初はVector3.zeroに設定されていた. なぜ?
+					poseVector = fixedPose.apply(Vector3.zero());
 					pointerVector = camera.toMetricCoordinates(path.get(i+1).x, path.get(i+1).y);
-					double angle = 
-							angle(pointerVector.getX(), pointerVector.getY(), poseVector.getX(),poseVector.getY());
+					double angle = angle(pointerVector.getX(), pointerVector.getY(), 
+							poseVector.getX(),poseVector.getY());
 					fixedPose = Transform.translation(poseVector).multiply(Transform.zRotation(angle));
 					
 					// ROBOT_FRAME基準でposeStamped生成
@@ -270,7 +279,8 @@ public class MapPosePublisherLayer extends DefaultLayer {
 				"move_base_msgs/MoveBaseActionGoal");
 		// パスをパブリッシュするノードを追加, トピック名はどうするか…
 		// discretedPointPublisher & pathPosePublisher
-		pathPosePublisher = connectedNode.newPublisher("/android/path_pose", "/geometry_msgs/PoseStamped");
+		// PoseSubscriberLayerを用意する.
+		pathPosePublisher = connectedNode.newPublisher("/android/path_pose", "geometry_msgs/PoseStamped");
 		// pathPublisher = connectedNode.newPublisher("/android/path", "nav_msgs/Path");
 		// マルチスレッドでgestureDetectorを定義
 		handler.post(new Runnable() {
@@ -317,6 +327,7 @@ public class MapPosePublisherLayer extends DefaultLayer {
 		initialPosePublisher.shutdown();
 		androidGoalPublisher.shutdown();
 		goalPublisher.shutdown();
-		pathPublisher.shutdown();
+		pathPosePublisher.shutdown();
+		// pathPublisher.shutdown();
 	}
 }

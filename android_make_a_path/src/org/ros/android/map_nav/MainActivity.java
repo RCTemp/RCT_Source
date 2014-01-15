@@ -153,13 +153,13 @@ public class MainActivity extends RosAppActivity {
 				mapPosePublisherLayer.echoPath(pathView.getPath());
 				// path送信後, visible == falseとする.
 				// mapPosePublisherLayer.setVisible(false);
-				StringBuilder path = new StringBuilder();
+				/* StringBuilder path = new StringBuilder();
 				for ( Point p : pathView.getPath() ){
 					path.append( "(" + p.x + "," + p.y + ") " ) ;
 				}
 				String ec = path.substring(0,path.length()-1) ;
 				System.out.println(ec);
-				stringPub.echo(ec);
+				stringPub.echo(ec); */
 			}
 		});
 
@@ -221,6 +221,7 @@ public class MainActivity extends RosAppActivity {
 		mapView.addLayer(mapPosePublisherLayer);
 		mapView.addLayer(new InitialPoseSubscriberLayer("/android/initialpose"));
 		mapView.addLayer(new PoseSubscriberLayer("/android/goal"));
+		mapView.addLayer(new PoseSubscriberLayer("/android/path_pose"));
 		NtpTimeProvider ntpTimeProvider = new NtpTimeProvider(
 				InetAddressFactory.newFromHostString("192.168.0.1"),
 				nodeMainExecutor.getScheduledExecutorService());
