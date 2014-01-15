@@ -12,17 +12,20 @@
 	 (y (* 2 (- (aref (send msg :axes) 0) 0.5)))
 	 (r (atan2 y x))
 	 (twist (instance geometry_msgs::twist :init)))
-    (send (send twist :linear) :x x)
-    (send (send twist :linear) :y 0)
-    (send (send twist :linear) :z 0)
-    (send (send twist :angular) :x 0)
-    (send (send twist :angular) :y 0)
-    (send (send twist :angular) :z (* -1.0 r))
-    (ros::publish "/turtlebot_controller/twist_command"
-		  twist))
-  )
+    (cond
+     ((or (> (abs x) 1e-3)
+	  (> (abs y) 1e-3))
+      (send (send twist :linear) :x x)
+      (send (send twist :linear) :y y)
+      (send (send twist :linear) :z 0)
+      (send (send twist :angular) :x 0)
+      (send (send twist :angular) :y 0)
+      (send (send twist :angular) :z (* -1.0 r))
+      (ros::publish "/sphero_node/cmd_vel"
+		    twist)))
+    ))
 
-(ros::advertise "/turtlebot_controller/twist_command"
+(ros::advertise "/sphero_node/cmd_vel"
                 geometry_msgs::twist)
 (ros::subscribe "/nanopad2/joy"
 		sensor_msgs::Joy

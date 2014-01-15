@@ -1,0 +1,16 @@
+<launch>
+  <node pkg="jsk_joy"
+	type="nanopad2_joy.py"
+	name="nanopad2_joy"
+	args="3"
+	output="log" />
+  <node pkg="turtlebot_simple_nav"
+	type="nanopad2twist-sphero.l"
+	name="nanopad2twist"
+	output="log" />
+  <node pkg="ROS2OSC"
+	type="run_java.sh"
+	name="simple_sound"
+	args="$(find euslib)/demo/s-noda/java/SimpleSound/SimpleSound.jar -j /nanopad2/joy -r $(env ROS_IP) -m $(env ROS_MASTER_URI)"
+	output="log" />
+</launch>
