@@ -1,7 +1,8 @@
 package org.ros.android.map_nav;
 
-import map_store.ListMaps;
-import map_store.ListMapsRequest;
+// rosjavaで生成したrosjava_messagesをimportしている
+import map_store.ListMaps; // rosjava_core/rosjava_messages/build/generated-src/map_store以下にある
+import map_store.ListMapsRequest; // 
 import map_store.ListMapsResponse;
 import map_store.PublishMap;
 import map_store.PublishMapRequest;
@@ -17,8 +18,6 @@ import org.ros.node.service.ServiceResponseListener;
 
 public class MapManager extends AbstractNodeMain {
 
-	
-	
 	private ConnectedNode connectedNode;
 	private String function;
 	private ServiceResponseListener<ListMapsResponse> listServiceResponseListener;
