@@ -1,5 +1,7 @@
 package org.ros.android.map_nav;
 
+import java.util.ArrayList;
+
 import geometry_msgs.PoseStamped;
 import geometry_msgs.PoseWithCovarianceStamped;
 import nav_msgs.Path; // PoseStampedの配列を生成
@@ -22,6 +24,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.graphics.Point; // 追加
 
 import com.google.common.base.Preconditions;
 
@@ -35,6 +38,7 @@ public class MapPosePublisherLayer extends DefaultLayer {
 	private Publisher<geometry_msgs.PoseWithCovarianceStamped> initialPosePublisher;
 	private Publisher<geometry_msgs.PoseStamped> androidGoalPublisher;
 	private Publisher<move_base_msgs.MoveBaseActionGoal> goalPublisher;
+	private Publisher<geometry_msgs.PoseStamped> pathPosePublisher; // PoseとPointの違いは?
 	private Publisher<nav_msgs.Path> pathPublisher;
 	private boolean visible;
 	private GraphName topic;
@@ -69,6 +73,10 @@ public class MapPosePublisherLayer extends DefaultLayer {
 	public void setPathMode() {
 		mode = PATH_MODE;
 	}
+	// visibleの設定
+	public void setVisible(boolean flag) {
+		visible = flag;
+	}
 
 	// OpenGL10で描画
 	@Override
@@ -91,8 +99,8 @@ public class MapPosePublisherLayer extends DefaultLayer {
 	// 通常はMainActivityで個別実装だが, こちらは拡張クラスなので,
 	// 事前にonTouchEventを実装している. 
 	// mapPosePublisherLayerがMainActivityに生成された時点で有効
-	// ACTION_DOWNで有効化
-	// 動かすと, ACTION_MOVEに移行
+	// ACTION_DOWNで起動. 動かすと, ACTION_MOVEに移行. ACTION_UPで終了.
+	// ここにパス描画機能を実装すればスマートだが, 時間がかかりそう.
 	@Override
 	public boolean onTouchEvent(VisualizationView view, MotionEvent event) {
 		if (visible) {
@@ -126,6 +134,8 @@ public class MapPosePublisherLayer extends DefaultLayer {
 				PoseStamped poseStamped;
 				switch (mode) { // modeを切り替える
 				case POSE_MODE:
+					// poseStampedの作成
+					// MAP_FRAME基準でfixedPose生成
 					camera.setFrame(MAP_FRAME);
 					poseVector = fixedPose.apply(Vector3.zero());
 					pointerVector = camera.toMetricCoordinates(
@@ -135,7 +145,12 @@ public class MapPosePublisherLayer extends DefaultLayer {
 							poseVector.getY());
 					fixedPose = Transform.translation(poseVector).multiply(
 							Transform.zRotation(angle2));
+					
+					// ROBOT_FRAME基準でposeStamped生成
 					camera.setFrame(ROBOT_FRAME);
+					// ヘッダに座標系と時間をセットし, PoseStampedの値をセット
+					// PoseStampedの中身はTramsform型のfixedPoseを変換している?
+					// androidGoalPublisher.newMessage()を入れるのはお約束?
 					poseStamped = fixedPose.toPoseStampedMessage(
 							GraphName.of(ROBOT_FRAME),
 							connectedNode.getCurrentTime(),
@@ -143,7 +158,7 @@ public class MapPosePublisherLayer extends DefaultLayer {
 
 					PoseWithCovarianceStamped initialPose = initialPosePublisher
 							.newMessage();
-					initialPose.getHeader().setFrameId(MAP_FRAME);
+					initialPose.getHeader().setFrameId(MAP_FRAME); // HeaderにFrameIdをset
 					initialPose.getPose().setPose(poseStamped.getPose());
 					double[] covariance = initialPose.getPose().getCovariance();
 					covariance[6 * 0 + 0] = 0.5 * 0.5;
@@ -170,15 +185,14 @@ public class MapPosePublisherLayer extends DefaultLayer {
 					message.getGoal().setTargetPose(poseStamped);
 					goalPublisher.publish(message);
 					break;
-				case PATH_MODE:
+				/* case PATH_MODE:
 					// goalを離散化して, x, y, angleを付加して渡す
 					// キャンセルされるまでループとして廻しておく…？
 					// 障害物回避など, 経路計算はしない
 					// eusのgo-posのような動かし方ができないか.
 					// goPosPublisherを作る…？
 					// 離散化して, go-posで動かす配列をつくる
-					
-					break;
+					break; */
 				}
 				visible = false;
 				return true; // 次のMotionEventに移る
@@ -186,6 +200,54 @@ public class MapPosePublisherLayer extends DefaultLayer {
 		}
 		gestureDetector.onTouchEvent(event); // さらにTouchEventを拾う
 		return false; // 次
+	}
+	
+	// Pathを実際にパブリッシュするための関数
+	public void echoPath(ArrayList<Point> path) {
+		// ループを廻す
+		// 原点と次点から角度を計算
+		// PointとQuaternionを設定
+		// e.getX, e.getYをPathViewのタッチ座標に置き換え
+		// pose = Transform.translation(camera.toMetricCoordinates((int) e.getX(),(int) e.getY())); 
+		// shape.setTransform(pose); // 不要
+		// camera.setFrame(MAP_FRAME); // tfのをmapフレームに設定
+		// fixedPose = Transform.translation(camera.toMetricCoordinates((int) e.getX(),(int) e.getY()));
+		// camera.setFrame(ROBOT_FRAME); // tfをbase_linkフレームに設定
+		// poseはFrameを意識していない?
+		visible = true;
+		if (visible) {
+			// Preconditions.checkNotNull(path);
+			Vector3 poseVector;
+			Vector3 pointerVector;
+			PoseStamped poseStamped;
+			
+			for(int i=0; i < path.size(); i++) {
+				// MAP_FRAME基準でfixedPose生成
+				// path.get(i+1)と比較して角度生成
+				if (i == path.size()-1) {
+					
+				} else {
+					camera.setFrame(MAP_FRAME);
+					Vector3 vector3 = new Vector3(path.get(i).x, path.get(i).y, 0);
+					poseVector = fixedPose.apply(vector3); // 最初はVector3.zeroに設定されていた. なぜ?
+					pointerVector = camera.toMetricCoordinates(path.get(i+1).x, path.get(i+1).y);
+					double angle = 
+							angle(pointerVector.getX(), pointerVector.getY(), poseVector.getX(),poseVector.getY());
+					fixedPose = Transform.translation(poseVector).multiply(Transform.zRotation(angle));
+					
+					// ROBOT_FRAME基準でposeStamped生成
+					camera.setFrame(ROBOT_FRAME);
+					poseStamped = fixedPose.toPoseStampedMessage(GraphName.of(ROBOT_FRAME),
+							connectedNode.getCurrentTime(), androidGoalPublisher.newMessage());
+					
+					PoseStamped pathPose = pathPosePublisher.newMessage();
+					pathPose.getHeader().setFrameId(MAP_FRAME);
+					pathPose.setPose(poseStamped.getPose()); // Covarianceが無いことに注意.
+					pathPosePublisher.publish(pathPose);
+				}
+			}
+		} // poseはROBOT_FRAMEとMAP_FRAMEで出している.
+		visible = false;
 	}
 
 	// 
@@ -200,13 +262,16 @@ public class MapPosePublisherLayer extends DefaultLayer {
 		// ノード設定
 		initialPosePublisher = connectedNode.newPublisher("/initialpose",
 				"geometry_msgs/PoseWithCovarianceStamped");
+		// Goalの姿勢をPublish
 		androidGoalPublisher = connectedNode.newPublisher("/android/goal",
 				"geometry_msgs/PoseStamped");
+		// PublishされたGoalの姿勢を元に, Goalへ実際に移動するためのトピックをPublish
 		goalPublisher = connectedNode.newPublisher("/move_base/goal",
 				"move_base_msgs/MoveBaseActionGoal");
 		// パスをパブリッシュするノードを追加, トピック名はどうするか…
-		// pathPosePublisher
-		pathPublisher = connectedNode.newPublisher("/android/path", "nav_msgs/Path");
+		// discretedPointPublisher & pathPosePublisher
+		pathPosePublisher = connectedNode.newPublisher("/android/path_pose", "/geometry_msgs/PoseStamped");
+		// pathPublisher = connectedNode.newPublisher("/android/path", "nav_msgs/Path");
 		// マルチスレッドでgestureDetectorを定義
 		handler.post(new Runnable() {
 			@Override
@@ -222,14 +287,19 @@ public class MapPosePublisherLayer extends DefaultLayer {
 								// translationでさらにQuaternion.identity()を付加
 								// Quaternion.identity(), (x,y,z,w) = (0,0,0,1)
 								// 角度は初期化
+								// これらの座標変換コードをpathの(x,y)に適用してやる.
+								// pose, ROBOT_FRAMEは設定されていない...?
 								pose = Transform.translation(camera
 										.toMetricCoordinates((int) e.getX(),
 												(int) e.getY())); // zを0にして, Vector3型にする
 								shape.setTransform(pose); // shapeにposeをセット
+								
+								// fixedPose, MAP_FRAMEに合わせて初期化
 								camera.setFrame(MAP_FRAME); // tfのをmapフレームに設定
 								fixedPose = Transform.translation(camera
 										.toMetricCoordinates((int) e.getX(),
 												(int) e.getY()));
+								
 								camera.setFrame(ROBOT_FRAME); // tfをbase_linkフレームに設定
 								visible = true;
 							}

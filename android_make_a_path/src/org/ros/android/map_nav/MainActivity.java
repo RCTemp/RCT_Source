@@ -141,15 +141,24 @@ public class MainActivity extends RosAppActivity {
 		});
 		
 		// sentButtonのonClickListener
+		// MapPosePublisherLayerに渡して処理するべき?
+		// PathViewで取得した座標をMapPosePublisherLayerに渡す.
 		sendButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
+				// mapPosePublisherLayerのメソッドを動作させるための条件を整える.
+				// mapPosePublisherLayer.setVisible(true);
+				// mapPosePublisherLayer.setPathMode();
+				// visible == trueとしている間にpathを送る.
+				mapPosePublisherLayer.echoPath(pathView.getPath());
+				// path送信後, visible == falseとする.
+				// mapPosePublisherLayer.setVisible(false);
 				StringBuilder path = new StringBuilder();
 				for ( Point p : pathView.getPath() ){
 					path.append( "(" + p.x + "," + p.y + ") " ) ;
 				}
 				String ec = path.substring(0,path.length()-1) ;
-				System.out.println(ec) ;
+				System.out.println(ec);
 				stringPub.echo(ec);
 			}
 		});
@@ -245,9 +254,11 @@ public class MainActivity extends RosAppActivity {
 	public void setPathClicked(View view) {
 		setPath();
 	}
-	
+	// PathViewの呼び出し
 	private void setPath() {
+		// setPoseModeの拡張？
 		// Pathモードへの切り替え. VISIBLEとGONEの切り替え.
+		// ここではPathViewのみ有効化
 		Log.d("setPath()", "パスモードへ切替");
 		if (pathView.getVisibility() == View.VISIBLE) {
 			pathView.setVisibility(View.GONE);
