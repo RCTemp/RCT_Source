@@ -421,15 +421,18 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
         }
 
 #endif
-      teleopNodePub1_.publish(std_msgs::Empty());
-      npc1NodePub1_.publish(std_msgs::Empty());
-      npc2NodePub1_.publish(std_msgs::Empty());
-
-
-      if(!gameOverFlag)
+      if(!gameClearFlag)
         {
-          overSoundPub_.publish(std_msgs::Empty());
-          gameOverFlag = true;
+          teleopNodePub1_.publish(std_msgs::Empty());
+          npc1NodePub1_.publish(std_msgs::Empty());
+          npc2NodePub1_.publish(std_msgs::Empty());
+
+
+          if(!gameOverFlag)
+            {
+              overSoundPub_.publish(std_msgs::Empty());
+              gameOverFlag = true;
+            }
         }
     }
   else
@@ -504,14 +507,17 @@ void TurtlebotsMaster::teleopNodeBumperCallback(const kobuki_msgs::BumperEventCo
   if(delta_d1 < nodeIntervalThre_ || delta_d2 < nodeIntervalThre_)
     {
       ROS_WARN("touch the npc");
-      teleopNodePub2_.publish(std_msgs::Empty());
-      npc1NodePub2_.publish(std_msgs::Empty());
-      npc2NodePub2_.publish(std_msgs::Empty());
-
-      if(!gameClearFlag)
+      if(!gameOverFlag)
         {
-          clearSoundPub_.publish(std_msgs::Empty());
-          gameClearFlag = true;
+          teleopNodePub2_.publish(std_msgs::Empty());
+          npc1NodePub2_.publish(std_msgs::Empty());
+          npc2NodePub2_.publish(std_msgs::Empty());
+
+          if(!gameClearFlag)
+            {
+              clearSoundPub_.publish(std_msgs::Empty());
+              gameClearFlag = true;
+            }
         }
     }
 }
