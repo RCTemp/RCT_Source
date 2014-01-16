@@ -9,13 +9,15 @@
 
 (defun sound-req-echo
   (msg)
-  (unix:system "aplay `rospack find turtlebots_master`/music_raw/bomb.mp3")
+  (unix:system "mpg321 `rospack find turtlebots_master`/music_raw/bomb.mp3")
+  (unix:system "mpg321 `rospack find turtlebots_master`/music_raw/deadend_long.mp3")
   )
 
 (defun sound-req-echo2
   (msg)
-  (unix:system "aplay `rospack find turtlebots_master`/music_raw/roar_zombie2.mp3")
-  (unix:system "aplay `rospack find turtlebots_master`/music_raw/roar_zombie.mp3")
+  (unix:system "mpg321 `rospack find turtlebots_master`/music_raw/roar_zombie2.mp3")
+  (unix:system "mpg321 `rospack find turtlebots_master`/music_raw/roar_zombie.mp3")
+  (unix:system "mpg321 `rospack find turtlebots_master`/music_raw/mixup.mp3")
   )
 
 (ros::subscribe
