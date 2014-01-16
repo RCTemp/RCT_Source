@@ -7,7 +7,7 @@
 
 (ros::roseus "play_sound")
 
-(sys::make-thread 10)
+(sys::make-thread 100)
 
 (defun sound-req-echo
   (msg)
