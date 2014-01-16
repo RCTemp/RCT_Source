@@ -15,7 +15,7 @@
 (defun acc2vel
   (acc)
   (let ((max-v 0.03)
-	(max-r 0.06)
+	(max-r 0.1)
 	val)
     (mapcar
      #'(lambda (v max)

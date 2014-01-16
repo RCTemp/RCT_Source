@@ -7,7 +7,7 @@
 
 (defun sound-req-echo
   (msg)
-  (unix:system "aplay ../raw/bomb.mp3")
+  (unix:system "aplay ../music_raw/bomb.mp3")
   )
 
 (ros::subscribe
