@@ -22,8 +22,13 @@
 
 (defun sound-req-echo2
   (msg)
-  (unix:system "mplayer `rospack find turtlebots_master`/music_raw/roar_zombie2.mp3")
-  (unix:system "mplayer `rospack find turtlebots_master`/music_raw/roar_zombie.mp3")
+  (sys::thread
+   #'(lambda nil
+       (unix:system "mplayer `rospack find turtlebots_master`/music_raw/roar_zombie2.mp3")))
+  (sys::thread
+   #'(lambda nil
+       (unix:system "mplayer `rospack find turtlebots_master`/music_raw/roar_zombie.mp3")))
+  (unix:sleep 3)
   (sys::thread
    #'(lambda nil
        (unix:system "mplayer `rospack find turtlebots_master`/music_raw/mixup.mp3")))
