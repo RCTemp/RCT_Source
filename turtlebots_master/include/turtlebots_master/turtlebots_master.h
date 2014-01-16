@@ -47,6 +47,9 @@ class TurtlebotsMaster{
   ros::Publisher  npc2NodePub2_;   //clear_flag
   ros::Publisher  npc2NodePub3_;   //start_flag
 
+  ros::Publisher  clearSoundPub_; //clear_sound
+  ros::Publisher  overSoundPub_; //over_sound
+
   ros::Timer  timer_;
 
   double loopRate_;

@@ -21,12 +21,12 @@
   )
 
 (ros::subscribe
- "/teleop_node/stop_flag_from_master"
+ "/game_over_sound"
  std_msgs::empty
  #'sound-req-echo 1)
 
 (ros::subscribe
- "/teleop_node/clear_flag_from_master"
+ "/game_clear_sound"
  std_msgs::empty
  #'sound-req-echo2 1)
 

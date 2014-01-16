@@ -27,6 +27,12 @@ TurtlebotsMaster::TurtlebotsMaster(ros::NodeHandle nh, ros::NodeHandle nh_privat
   //callback
   npcNodesStartSub_ = turtlebotMasterNodeHandle_.subscribe<std_msgs::UInt8>(npcNodesStartSubName_, 1, &TurtlebotsMaster::npcNodesCmdCallback, this, ros::TransportHints().tcpNoDelay());
 
+
+
+  clearSoundPub_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Empty>("game_clear_sound", 1);
+  overSoundPub_ = turtlebotMasterNodeHandle_.advertise<std_msgs::Empty>("game_over_sound", 1);
+
+
   //temporarily initialization for turtlebots pose
   teleopNodeX = 100;
   teleopNodeY = 100;
@@ -415,12 +421,14 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
         }
 
 #endif
+      teleopNodePub1_.publish(std_msgs::Empty());
+      npc1NodePub1_.publish(std_msgs::Empty());
+      npc2NodePub1_.publish(std_msgs::Empty());
+
 
       if(!gameOverFlag)
         {
-          teleopNodePub1_.publish(std_msgs::Empty());
-          npc1NodePub1_.publish(std_msgs::Empty());
-          npc2NodePub1_.publish(std_msgs::Empty());
+          overSoundPub_.publish(std_msgs::Empty());
           gameOverFlag = true;
         }
     }
@@ -496,11 +504,13 @@ void TurtlebotsMaster::teleopNodeBumperCallback(const kobuki_msgs::BumperEventCo
   if(delta_d1 < nodeIntervalThre_ || delta_d2 < nodeIntervalThre_)
     {
       ROS_WARN("touch the npc");
+      teleopNodePub2_.publish(std_msgs::Empty());
+      npc1NodePub2_.publish(std_msgs::Empty());
+      npc2NodePub2_.publish(std_msgs::Empty());
+
       if(!gameClearFlag)
         {
-          teleopNodePub2_.publish(std_msgs::Empty());
-          npc1NodePub2_.publish(std_msgs::Empty());
-          npc2NodePub2_.publish(std_msgs::Empty());
+          clearSoundPub_.publish(std_msgs::Empty());
           gameClearFlag = true;
         }
     }
