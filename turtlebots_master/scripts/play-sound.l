@@ -5,6 +5,8 @@
 (ros::load-ros-manifest "kobuki_msgs")
 (ros::load-ros-manifest "nav_msgs")
 
+(ros::roseus "play-sound")
+
 (defun sound-req-echo
   (msg)
   (unix:system "aplay ../music_raw/bomb.mp3")
@@ -18,7 +20,7 @@
 (ros::rate 10)
 (do-until-key
  (if (not (ros::ok)) (return-from nil nil))
- (print 'running)
+ ;;(print 'running)
  (ros::spin-once)
  (ros::sleep)
  )
