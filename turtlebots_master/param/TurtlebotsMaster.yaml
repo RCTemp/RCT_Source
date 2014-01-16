@@ -43,4 +43,4 @@ npc2NodeSub1Name: /npc2_node/pose_pub
 npc2NodeSub1Type: geometry_msgs/PoseStamped
 
 npcNodesStartSubName: /npc_nodes_cmd
-searchLightFlag: false
+searchLightFlag: true
