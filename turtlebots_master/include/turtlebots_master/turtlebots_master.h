@@ -104,6 +104,8 @@ class TurtlebotsMaster{
   float npc2NodeY;
   float npc2NodeTheta;
 
+  bool gameClearFlag;
+  bool gameOverFlag;
 
   //debug 
   ros::Publisher npc1NodePub;

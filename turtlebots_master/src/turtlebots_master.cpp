@@ -40,6 +40,9 @@ TurtlebotsMaster::TurtlebotsMaster(ros::NodeHandle nh, ros::NodeHandle nh_privat
   npc2NodeY = -100;
   npc2NodeTheta = 0;
 
+  gameClearFlag = false;
+  gameOverFlag = false;
+
   if(searchLightFlag_)
     timer_ = turtlebotMasterNodeHandlePrivate_.createTimer(ros::Duration(1.0 / loopRate_), &TurtlebotsMaster::masterFunc, this);
 
@@ -412,9 +415,14 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
         }
 
 #endif
-      teleopNodePub1_.publish(std_msgs::Empty());
-      npc1NodePub1_.publish(std_msgs::Empty());
-      npc2NodePub1_.publish(std_msgs::Empty());
+
+      if(!gameOverFlag)
+        {
+          teleopNodePub1_.publish(std_msgs::Empty());
+          npc1NodePub1_.publish(std_msgs::Empty());
+          npc2NodePub1_.publish(std_msgs::Empty());
+          gameOverFlag = true;
+        }
     }
   else
     {
@@ -434,6 +442,8 @@ void TurtlebotsMaster::masterFunc(const ros::TimerEvent & e)
       teleopNodePoints.colors.push_back(teleop_node_point_color);
       teleopNodePub.publish(teleopNodePoints);
 #endif
+
+      //gameOverFlag = false; //right?
     }
 
 #if 0  //deubg
@@ -486,9 +496,13 @@ void TurtlebotsMaster::teleopNodeBumperCallback(const kobuki_msgs::BumperEventCo
   if(delta_d1 < nodeIntervalThre_ || delta_d2 < nodeIntervalThre_)
     {
       ROS_WARN("touch the npc");
-      teleopNodePub2_.publish(std_msgs::Empty());
-      npc1NodePub2_.publish(std_msgs::Empty());
-      npc2NodePub2_.publish(std_msgs::Empty());
+      if(!gameClearFlag)
+        {
+          teleopNodePub2_.publish(std_msgs::Empty());
+          npc1NodePub2_.publish(std_msgs::Empty());
+          npc2NodePub2_.publish(std_msgs::Empty());
+          gameClearFlag = true;
+        }
     }
 }
 
@@ -541,9 +555,13 @@ void TurtlebotsMaster::npcNodesCmdCallback(const std_msgs::UInt8ConstPtr & cmd_m
       cmd_msgs.data = START_CMD;
       npc1NodePub3_.publish(cmd_msgs);
       npc2NodePub3_.publish(cmd_msgs);
+
     }
   else
     ROS_WARN("get unknown cmd for npc nodes");
+
+  gameOverFlag = false; 
+  gameClearFlag = false; 
 }
 
  float TurtlebotsMaster::distanceBetweenTwoNodes(float x1, float x2, float y1, float y2)
