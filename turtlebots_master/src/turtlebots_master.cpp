@@ -477,6 +477,7 @@ void TurtlebotsMaster::teleopNodePoseCallback(const geometry_msgs::PoseStampedCo
 
 void TurtlebotsMaster::teleopNodeBumperCallback(const kobuki_msgs::BumperEventConstPtr & bumper_msg)
 {
+  ROS_ERROR("bumper!!!!!");
   float delta_d1
     = distanceBetweenTwoNodes(teleopNodeX, npc1NodeX, teleopNodeY, npc1NodeY);
   float delta_d2 
