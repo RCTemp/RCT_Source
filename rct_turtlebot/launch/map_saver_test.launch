@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+
+  <node name="map_saver" pkg="map_store" type="map_saver" output="screen" > 
+    <remap from ="/dynamic_map" to="/static_map"/>
+  </node>
+
+
+</launch>
