@@ -26,7 +26,7 @@
   (unix:system "mplayer `rospack find turtlebots_master`/music_raw/roar_zombie.mp3")
   (sys::thread
    #'(lambda nil
-       (unix:system "mpg321 `rospack find turtlebots_master`/music_raw/mixup.mp3")))
+       (unix:system "mplayer `rospack find turtlebots_master`/music_raw/mixup.mp3")))
   )
 
 (ros::subscribe
