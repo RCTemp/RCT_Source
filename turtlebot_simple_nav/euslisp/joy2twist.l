@@ -16,7 +16,7 @@
     (send (send twist :angular) :x 0)
     (send (send twist :angular) :y 0)
     (send (send twist :angular) :z
-	  (* -1 (aref (send msg :axes) 3)))
+	  (* -2 (aref (send msg :axes) 3)))
     (ros::publish "/turtlebot_controller/twist_command"
 		  twist))
   )
