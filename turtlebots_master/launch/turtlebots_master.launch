@@ -8,4 +8,9 @@
   <node name="turtlebots_master" pkg="turtlebots_master" type="turtlebots_master_node" respawn="false" output="screen">
     <rosparam file="$(find turtlebots_master)/param/TurtlebotsMaster.yaml"/>
   </node>
+
+
+  <node name="play_sound" pkg="turtlebots_master" type="play-sound.l" respawn="false" />
+
+
 </launch>

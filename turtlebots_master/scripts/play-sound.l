@@ -9,22 +9,22 @@
 
 (defun sound-req-echo
   (msg)
-  (unix:system "aplay ../music_raw/bomb.mp3")
+  (unix:system "aplay `rospack find turtlebots_master`/music_raw/bomb.mp3")
   )
 
 (defun sound-req-echo2
   (msg)
-  (unix:system "aplay ../music_raw/roar_zombie2.mp3")
-  (unix:system "aplay ../music_raw/roar_zombie.mp3")
+  (unix:system "aplay `rospack find turtlebots_master`/music_raw/roar_zombie2.mp3")
+  (unix:system "aplay `rospack find turtlebots_master`/music_raw/roar_zombie.mp3")
   )
 
 (ros::subscribe
- "/dead"
+ "/teleop_node/stop_flag_from_master"
  std_msgs::empty
  #'sound-req-echo 1)
 
 (ros::subscribe
- "/clear"
+ "/teleop_node/clear_flag_from_master"
  std_msgs::empty
  #'sound-req-echo2 1)
 
