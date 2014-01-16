@@ -7,17 +7,27 @@
 
 (ros::roseus "play_sound")
 
+(sys::make-thread 10)
+
 (defun sound-req-echo
   (msg)
-  (unix:system "mpg321 `rospack find turtlebots_master`/music_raw/bomb.mp3")
-  (unix:system "mpg321 `rospack find turtlebots_master`/music_raw/deadend_long.mp3")
+  (sys::thread
+   #'(lambda nil
+       (unix:system "mplayer `rospack find turtlebots_master`/music_raw/bomb.mp3")))
+  (unix:sleep 3)
+  (sys::thread
+   #'(lambda nil
+       (unix:system "mplayer `rospack find turtlebots_master`/music_raw/deadend_long.mp3")))
   )
 
 (defun sound-req-echo2
   (msg)
-  (unix:system "mpg321 `rospack find turtlebots_master`/music_raw/roar_zombie2.mp3")
-  (unix:system "mpg321 `rospack find turtlebots_master`/music_raw/roar_zombie.mp3")
-  (unix:system "mpg321 `rospack find turtlebots_master`/music_raw/mixup.mp3")
+  (unix:system "mplayer `rospack find turtlebots_master`/music_raw/roar_zombie2.mp3")
+  (unix:system "mplayer `rospack find turtlebots_master`/music_raw/roar_zombie.mp3")
+  (unix:sleep 3)
+  (sys::thread
+   #'(lambda nil
+       (unix:system "mpg321 `rospack find turtlebots_master`/music_raw/mixup.mp3")))
   )
 
 (ros::subscribe
