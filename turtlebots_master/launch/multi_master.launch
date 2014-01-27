@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find multi_master_server)/launch/init.launch" >
+    <env name="MULTIMASTER_ROS_IP"
+         value="192.168.2.1" />
+  </include>
+</launch>
